@@ -1,0 +1,499 @@
+/* ==========================================================================
+   🌍 CONFIGURACIÓN GENERAL
+   ========================================================================== */
+
+tbody tr:hover { 
+  background-color: #f8fafc; 
+}
+
+tbody tr td button:hover { 
+  background-color: #fee2e2; 
+  transform: scale(1.1); 
+}
+
+/* ==========================================================================
+   🚨 ALERTAS DEL SISTEMA
+   ========================================================================== */
+
+.saas-alert { 
+  padding: 14px 18px; 
+  border-radius: 10px; 
+  font-weight: 500; 
+  font-size: 0.95rem; 
+  margin-bottom: 15px; 
+}
+
+.saas-alert.info { 
+  background: #f8fafc; 
+  color: #64748b; 
+  border: 1px solid #e2e8f0; 
+}
+
+.saas-alert.warning { 
+  background: #fff9db; 
+  color: #856404; 
+  border: 1px solid #ffe066; 
+}
+
+/* ==========================================================================
+   🏷️ BADGES
+   ========================================================================== */
+
+.local-badge {
+  padding: 5px 12px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  border-radius: 999px;
+  text-transform: uppercase;
+  display: inline-block;
+}
+
+.local-badge.activo {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.local-badge.inactivo {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+/* ==========================================================================
+   🧾 MODAL OVERLAY
+   ========================================================================== */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+
+  width: 100vw;
+  height: 100vh;
+
+  background: rgba(15, 23, 42, 0.45);
+
+  backdrop-filter: blur(5px);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  z-index: 9999;
+
+  animation: fadeIn 0.25s ease;
+}
+
+/* ==========================================================================
+   📦 MODAL CARD
+   ========================================================================== */
+
+.modal-card {
+  width: 100%;
+  max-width: 500px;
+
+  background: #ffffff;
+
+  border-radius: 20px;
+
+  border: 1px solid #e2e8f0;
+
+  padding: 30px;
+
+  box-shadow:
+    0 25px 50px rgba(15, 23, 42, 0.18);
+
+  animation: scaleUp 0.2s ease-out;
+
+  max-height: 90vh;
+
+  overflow-y: auto;
+}
+
+/* ==========================================================================
+   🧠 HEADER MODAL
+   ========================================================================== */
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  margin-bottom: 25px;
+}
+
+.modal-title {
+  margin: 0;
+
+  font-size: 1.2rem;
+  font-weight: 700;
+
+  color: #0f172a;
+}
+
+.modal-close {
+  width: 34px;
+  height: 34px;
+
+  border-radius: 10px;
+
+  border: none;
+
+  background: #f1f5f9;
+
+  color: #475569;
+
+  cursor: pointer;
+
+  font-size: 1rem;
+
+  transition: all .2s ease;
+}
+
+.modal-close:hover {
+  background: #e2e8f0;
+  transform: rotate(90deg);
+}
+
+/* ==========================================================================
+   ✍️ INPUTS PREMIUM
+   ========================================================================== */
+
+.custom-field-group {
+  position: relative;
+  width: 100%;
+}
+
+.premium-input {
+  width: 100%;
+
+  height: 50px;
+
+  padding: 16px 14px 6px;
+
+  border-radius: 12px;
+
+  border: 1px solid #cbd5e1;
+
+  background: #ffffff;
+
+  font-size: 0.95rem;
+
+  color: #0f172a;
+
+  outline: none;
+
+  transition:
+    border-color .2s ease,
+    box-shadow .2s ease;
+
+  box-sizing: border-box;
+}
+
+.premium-input:focus {
+  border-color: #2563eb;
+
+  box-shadow:
+    0 0 0 4px rgba(37, 99, 235, 0.12);
+}
+
+.custom-label {
+  position: absolute;
+
+  left: 14px;
+  top: 50%;
+
+  transform: translateY(-50%);
+
+  font-size: 0.92rem;
+
+  color: #64748b;
+
+  background: white;
+
+  padding: 0 5px;
+
+  transition: all .2s ease;
+
+  pointer-events: none;
+}
+
+.premium-input:focus ~ .custom-label,
+.premium-input:not(:placeholder-shown) ~ .custom-label {
+  top: 0;
+
+  transform: translateY(-50%);
+
+  font-size: 0.72rem;
+
+  font-weight: 700;
+
+  color: #2563eb;
+}
+
+/* ==========================================================================
+   🧩 FORM GRID
+   ========================================================================== */
+
+.modal-grid {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+  margin-bottom: 20px;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.input-group.flex-1 {
+  flex: 1;
+}
+
+.input-group.small {
+  width: 90px;
+}
+
+/* ==========================================================================
+   ➕ BOTÓN AGREGAR
+   ========================================================================== */
+
+.btn-add-simple {
+  width: 46px;
+  height: 46px;
+
+  border: none;
+
+  border-radius: 12px;
+
+  background: linear-gradient(
+    135deg,
+    #2563eb,
+    #1d4ed8
+  );
+
+  color: white;
+
+  cursor: pointer;
+
+  transition:
+    transform .15s ease,
+    box-shadow .2s ease;
+}
+
+.btn-add-simple:hover {
+  transform: scale(1.05);
+
+  box-shadow:
+    0 12px 20px rgba(37, 99, 235, 0.25);
+}
+
+/* ==========================================================================
+   🔘 BOTONES
+   ========================================================================== */
+
+.saas-btn-primary,
+.saas-btn-dark,
+.saas-btn-secondary {
+  border: none;
+
+  padding: 12px 20px;
+
+  border-radius: 10px;
+
+  cursor: pointer;
+
+  font-size: 0.95rem;
+
+  font-weight: 600;
+
+  transition:
+    transform .15s ease,
+    background .2s ease,
+    box-shadow .2s ease;
+}
+
+.saas-btn-primary {
+  background: linear-gradient(
+    135deg,
+    #2563eb,
+    #1d4ed8
+  );
+
+  color: white;
+}
+
+.saas-btn-primary:hover {
+  transform: translateY(-1px);
+
+  box-shadow:
+    0 10px 20px rgba(37,99,235,.20);
+}
+
+.saas-btn-dark {
+  background: linear-gradient(
+    135deg,
+    #0f172a,
+    #1e293b
+  );
+
+  color: white;
+}
+
+.saas-btn-dark:hover {
+  transform: translateY(-1px);
+
+  box-shadow:
+    0 10px 20px rgba(15,23,42,.18);
+}
+
+.saas-btn-secondary {
+  background: #f1f5f9;
+
+  color: #475569;
+}
+
+.saas-btn-secondary:hover {
+  background: #e2e8f0;
+}
+
+/* ==========================================================================
+   📋 TABLAS
+   ========================================================================== */
+
+.saas-table {
+  width: 100%;
+
+  border-collapse: separate;
+  border-spacing: 0;
+
+  margin-top: 15px;
+
+  overflow: hidden;
+
+  border-radius: 14px;
+}
+
+.saas-table thead tr {
+  background: #f8fafc;
+}
+
+.saas-table th {
+  padding: 14px;
+
+  font-size: 0.8rem;
+
+  font-weight: 700;
+
+  color: #64748b;
+
+  text-transform: uppercase;
+}
+
+.saas-table td {
+  padding: 15px;
+
+  border-bottom: 1px solid #f1f5f9;
+
+  color: #334155;
+
+  font-size: 0.92rem;
+}
+
+.saas-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* ==========================================================================
+   🍞 TOAST
+   ========================================================================== */
+
+.saas-toast {
+  position: fixed;
+
+  top: 24px;
+  right: 24px;
+
+  background: white;
+
+  padding: 16px 22px;
+
+  border-radius: 14px;
+
+  border-left: 5px solid #10b981;
+
+  box-shadow:
+    0 10px 20px rgba(15,23,42,.10);
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  z-index: 10001;
+
+  animation: slideIn 0.3s ease;
+}
+
+/* ==========================================================================
+   ✨ ANIMACIONES
+   ========================================================================== */
+
+@keyframes scaleUp {
+  from {
+    transform: scale(0.96);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(120%);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* ==========================================================================
+   📱 RESPONSIVE
+   ========================================================================== */
+
+@media (max-width: 768px) {
+
+  .modal-card {
+    width: calc(100% - 24px);
+
+    padding: 22px;
+  }
+
+  .modal-grid {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .input-group.small {
+    width: 100%;
+  }
+
+  .btn-add-simple {
+    width: 100%;
+  }
+}

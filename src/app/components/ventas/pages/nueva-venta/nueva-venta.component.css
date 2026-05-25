@@ -1,0 +1,324 @@
+.venta-page {
+    padding: 2.5rem;
+    background: linear-gradient(to bottom right, #f4f7fc, #eef4ff);
+    min-height: 100vh;
+
+    /* SEPARACION ENTRE CARDS */
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.page-header {
+    margin-bottom: .5rem;
+}
+
+.page-title {
+    margin: 0;
+    font-size: 2.7rem;
+    font-weight: 700;
+    color: #1e3a8a;
+    letter-spacing: -.5px;
+}
+
+.page-subtitle {
+    margin-top: .6rem;
+    color: #64748b;
+    font-size: 1rem;
+}
+
+/* CARD */
+
+.venta-card {
+    border-radius: 28px !important;
+    border: 1px solid #dbeafe;
+    box-shadow:
+        0 10px 25px rgba(37, 99, 235, 0.06),
+        0 4px 10px rgba(37, 99, 235, 0.04);
+
+    overflow: hidden;
+
+    /* MÁS ESPACIO INTERNO */
+    padding: .5rem;
+}
+
+/* TITLES */
+
+.section-title {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2.2rem;
+}
+
+.section-title span {
+    font-size: 1.55rem;
+    font-weight: 700;
+    color: #2563eb;
+}
+
+.icon-circle {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #60a5fa, #2563eb);
+
+    color: white;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 1.2rem;
+
+    box-shadow: 0 6px 18px rgba(37, 99, 235, 0.25);
+}
+
+/* INPUTS */
+
+:host ::ng-deep .p-inputtext,
+:host ::ng-deep .p-select,
+:host ::ng-deep .p-inputnumber-input,
+:host ::ng-deep .p-autocomplete input {
+
+    width: 100%;
+    border-radius: 16px !important;
+    padding: 1rem !important;
+
+    border: 1px solid #d6e3ff !important;
+
+    background: #fff;
+
+    transition: all .25s ease;
+}
+
+:host ::ng-deep .p-inputtext:hover,
+:host ::ng-deep .p-select:hover,
+:host ::ng-deep .p-inputnumber-input:hover {
+    border-color: #93c5fd !important;
+}
+
+:host ::ng-deep .p-inputtext:focus,
+:host ::ng-deep .p-select:focus,
+:host ::ng-deep .p-inputnumber-input:focus {
+
+    border-color: #2563eb !important;
+
+    box-shadow:
+        0 0 0 4px rgba(37, 99, 235, 0.12) !important;
+}
+
+/* FLOAT LABEL */
+
+:host ::ng-deep .p-floatlabel label {
+    color: #64748b;
+}
+
+/* BUTTONS */
+
+.btn-add,
+.btn-save {
+
+    background: linear-gradient(135deg, #3b82f6, #2563eb) !important;
+
+    border: none !important;
+
+    border-radius: 16px !important;
+
+    font-weight: 600;
+
+    height: 52px;
+
+    transition: all .25s ease;
+}
+
+.btn-add:hover,
+.btn-save:hover {
+    transform: translateY(-1px);
+
+    box-shadow: 0 8px 18px rgba(37, 99, 235, 0.22);
+}
+
+/* PRODUCTO ITEM */
+
+.producto-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
+
+.producto-name {
+    font-weight: 600;
+    color: #0f172a;
+}
+
+.producto-price {
+    color: #2563eb;
+    font-weight: 700;
+}
+
+/* TABLE */
+
+.tabla-venta {
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+:host ::ng-deep .tabla-venta .p-datatable-thead > tr > th {
+
+    background: linear-gradient(to bottom, #eff6ff, #e0edff) !important;
+
+    color: #1e3a8a !important;
+
+    padding: 1rem;
+
+    border: none !important;
+
+    font-weight: 700;
+}
+
+:host ::ng-deep .tabla-venta .p-datatable-tbody > tr > td {
+
+    padding: 1rem;
+
+    border-bottom: 1px solid #eef2ff;
+
+    vertical-align: middle;
+}
+
+:host ::ng-deep .tabla-venta .p-datatable-tbody > tr:hover {
+    background: #f8fbff !important;
+}
+
+/* PRODUCTO TABLA */
+
+.producto-table {
+    display: flex;
+    flex-direction: column;
+}
+
+.producto-table-name {
+    font-weight: 600;
+    color: #0f172a;
+}
+
+.subtotal {
+    color: #2563eb;
+    font-weight: 700;
+}
+
+/* EMPTY */
+
+.empty-state {
+    padding: 4rem 1rem;
+    text-align: center;
+}
+
+.empty-state i {
+    font-size: 4rem;
+    color: #60a5fa;
+    margin-bottom: 1rem;
+}
+
+.empty-state h3 {
+    margin-bottom: .5rem;
+    color: #1e293b;
+}
+
+.empty-state p {
+    color: #64748b;
+}
+
+/* FOOTER */
+
+.footer-card {
+
+    background: white;
+
+    border-radius: 28px;
+
+    padding: 2rem;
+
+    border: 1px solid #dbeafe;
+
+    box-shadow:
+        0 10px 25px rgba(37, 99, 235, 0.06),
+        0 4px 10px rgba(37, 99, 235, 0.04);
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.total-box {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.total-icon {
+
+    width: 68px;
+    height: 68px;
+
+    border-radius: 20px;
+
+    background: linear-gradient(135deg, #60a5fa, #2563eb);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: white;
+
+    font-size: 1.6rem;
+
+    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.2);
+}
+
+.total-box small {
+    color: #64748b;
+    font-weight: 600;
+}
+
+.total-box h2 {
+    margin: .3rem 0 0;
+    font-size: 2.2rem;
+    color: #1e3a8a;
+}
+
+.footer-buttons {
+    display: flex;
+    gap: 1rem;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 768px) {
+
+    .venta-page {
+        padding: 1rem;
+        gap: 1.5rem;
+    }
+
+    .page-title {
+        font-size: 2rem;
+    }
+
+    .footer-card {
+        flex-direction: column;
+        gap: 1.5rem;
+        align-items: stretch;
+    }
+
+    .footer-buttons {
+        flex-direction: column;
+    }
+
+    .btn-add,
+    .btn-save {
+        width: 100%;
+    }
+
+}

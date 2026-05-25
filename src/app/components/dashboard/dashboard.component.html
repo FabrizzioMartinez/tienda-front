@@ -1,0 +1,245 @@
+<div class="dashboard-container">
+
+  <!-- =========================================================
+       HEADER
+  ========================================================== -->
+
+  <div class="dashboard-header">
+
+    <div>
+      <h2 class="dashboard-title">
+        <i class="pi pi-chart-bar"></i>
+        Panel de Control
+      </h2>
+
+      <p class="dashboard-subtitle">
+        Resumen operacional de la tienda en tiempo real.
+      </p>
+    </div>
+
+  </div>
+
+  <!-- =========================================================
+       KPIs
+  ========================================================== -->
+
+  <div class="kpi-grid">
+
+    <!-- PRODUCTOS -->
+    <div class="kpi-card">
+
+      <div class="kpi-icon kpi-blue">
+        <i class="pi pi-box"></i>
+      </div>
+
+      <div class="kpi-info">
+        <h3>Total Productos</h3>
+        <p>{{ totalProductos }}</p>
+      </div>
+
+    </div>
+
+    <!-- ALERTAS -->
+    <div class="kpi-card">
+
+      <div class="kpi-icon kpi-red">
+        <i class="pi pi-exclamation-triangle"></i>
+      </div>
+
+      <div class="kpi-info">
+        <h3>Alertas Stock</h3>
+        <p>{{ totalAlertas }}</p>
+      </div>
+
+    </div>
+
+    <!-- VENTAS -->
+    <div class="kpi-card">
+
+      <div class="kpi-icon kpi-green">
+        <i class="pi pi-wallet"></i>
+      </div>
+
+      <div class="kpi-info">
+        <h3>Ventas del Día</h3>
+        <p>S/ {{ ventasDia | number:'1.2-2' }}</p>
+      </div>
+
+    </div>
+
+    <!-- MARCAS -->
+    <div class="kpi-card">
+
+      <div class="kpi-icon kpi-orange">
+        <i class="pi pi-building"></i>
+      </div>
+
+      <div class="kpi-info">
+        <h3>Marcas Activas</h3>
+        <p>{{ totalMarcas }}</p>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- =========================================================
+       QUICK ACTIONS
+  ========================================================== -->
+
+  <div class="quick-actions-section">
+
+    <div class="section-header">
+
+      <h4>
+        <i class="pi pi-bolt"></i>
+        Acciones Rápidas
+      </h4>
+
+    </div>
+
+    <div class="actions-layout">
+
+      <button
+        routerLink="/productos"
+        class="saas-btn-primary">
+
+        <i class="pi pi-box"></i>
+        Gestionar Inventario
+
+      </button>
+
+      <button
+        type="button"
+        (click)="irANuevaVenta()"
+        class="saas-btn-dark">
+        <i class="pi pi-shopping-cart"></i>
+        Nueva Venta
+      </button>
+
+      <button
+        routerLink="/marcas"
+        class="saas-btn-secondary">
+
+        <i class="pi pi-tags"></i>
+        Ver Marcas
+
+      </button>
+
+    </div>
+
+  </div>
+
+  <!-- =========================================================
+       STOCK CRÍTICO
+  ========================================================== -->
+
+  <div class="critical-section">
+
+    <div class="section-header">
+
+      <div>
+
+        <h3>
+          <i class="pi pi-exclamation-circle"></i>
+          Atención Requerida
+        </h3>
+
+        <p>
+          Productos con stock crítico o agotado.
+        </p>
+
+      </div>
+
+    </div>
+
+    <!-- EMPTY -->
+    <div
+      *ngIf="productosCriticos.length === 0"
+      class="empty-state">
+
+      <i class="pi pi-check-circle"></i>
+
+      <span>
+        Excelente. Todo el inventario está abastecido.
+      </span>
+
+    </div>
+
+    <!-- TABLE -->
+    <div
+      *ngIf="productosCriticos.length > 0"
+      class="table-container">
+
+      <table class="saas-table">
+
+        <thead>
+
+          <tr>
+            <th>Producto</th>
+            <th class="text-center">Marca</th>
+            <th class="text-center">Precio</th>
+            <th class="text-center">Estado</th>
+          </tr>
+
+        </thead>
+
+        <tbody>
+
+          <tr *ngFor="let p of productosCriticos">
+
+            <!-- PRODUCTO -->
+            <td>
+
+              <div class="product-name">
+                {{ p.nombre }}
+              </div>
+
+            </td>
+
+            <!-- MARCA -->
+            <td class="text-center">
+
+              {{ p.nombreMarca || '—' }}
+
+            </td>
+
+            <!-- PRECIO -->
+            <td class="text-center product-price">
+
+              S/ {{ p.precio | number:'1.2-2' }}
+
+            </td>
+
+            <!-- ESTADO -->
+            <td class="text-center">
+
+              <span
+                *ngIf="p.stock === 0"
+                class="local-badge agotado">
+
+                Agotado
+
+              </span>
+
+              <span
+                *ngIf="p.stock > 0"
+                class="local-badge urgente">
+
+                Urgente ({{ p.stock }})
+
+              </span>
+
+            </td>
+
+          </tr>
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+
+</div>

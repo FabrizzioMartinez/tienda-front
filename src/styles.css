@@ -1,0 +1,17 @@
+@import "primeicons/primeicons.css";
+@import 'primeflex/primeflex.css';
+
+.p-inputtext {
+  background: #ffffff !important;
+  color: #111827 !important;
+}
+
+.p-inputtext:focus {
+  background: #ffffff !important;
+  box-shadow: 0 0 0 0.2rem rgba(59,130,246,.25) !important;
+}
+
+:root {
+  --p-inputtext-background: #ffffff;
+  --p-inputtext-color: #111827;
+}

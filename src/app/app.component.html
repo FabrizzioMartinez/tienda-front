@@ -1,0 +1,383 @@
+<div class="app-container">
+  
+  <button class="mobile-toggle" (click)="toggleSidebarMobile()">
+    <span>☰</span>
+  </button>
+
+  <aside class="sidebar-premium" [class.mobile-open]="sidebarMobileAbierto">
+    
+    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 40px; padding-left: 8px;">
+      <div style="background: linear-gradient(135deg, #38bdf8, #2563eb); width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(56, 189, 248, 0.25);">
+        <span style="font-size: 1.1rem;">🏪</span>
+      </div>
+      <h1 style="font-size: 1.25rem; font-weight: 800; background: linear-gradient(to right, #ffffff, #94a3b8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0; letter-spacing: -0.5px;">
+        Store <span style="color: #38bdf8; -webkit-text-fill-color: initial; font-weight: 500; font-size: 0.95rem;">Plus</span>
+      </h1>
+    </div>
+    
+    <nav style="display: flex; flex-direction: column; gap: 8px; flex: 1;">
+      
+      <a routerLink="/dashboard" 
+         routerLinkActive="active-link" 
+         (click)="cerrarSidebarMobile()" 
+         style="display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 12px; text-decoration: none; font-weight: 600; font-size: 0.95rem; color: #94a3b8; transition: all 0.25s;"
+         class="menu-item-dashboard">
+        <i class="pi pi-home"></i>
+        <span>Inicio</span>
+      </a>
+
+      <div (click)="toggleAdministrativo()" 
+           style="display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 0.95rem; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); user-select: none;"
+           [style.background]="menuAdministrativoAbierto ? 'rgba(255, 255, 255, 0.06)' : 'transparent'"
+           [style.color]="menuAdministrativoAbierto ? '#38bdf8' : '#94a3b8'"
+           class="menu-padre">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <i class="pi pi-users"></i>
+          <span>Administrativo</span>
+        </div>
+        <span [style.transform]="menuAdministrativoAbierto ? 'rotate(90deg)' : 'rotate(0deg)'" 
+              style="transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1); font-size: 0.7rem; display: inline-block; opacity: 0.7;">
+          ▶
+        </span>
+      </div>
+
+      <div [style.max-height]="menuAdministrativoAbierto ? '240px' : '0px'" 
+           [style.opacity]="menuAdministrativoAbierto ? '1' : '0'"
+           style="overflow: hidden; transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease; display: flex; flex-direction: column; gap: 5px; padding-left: 12px; margin-top: 2px; border-left: 1px solid rgba(255, 255, 255, 0.08);">
+        
+        <a routerLink="/clientes" routerLinkActive="active-link" (click)="cerrarSidebarMobile()" class="sub-enlace">
+          <i class="pi pi-users"></i>
+          <span class="dot"></span> Clientes
+        </a>
+        
+        <a routerLink="/marcas" routerLinkActive="active-link" (click)="cerrarSidebarMobile()" class="sub-enlace">
+          <i class="pi pi-wallet"></i>
+          <span class="dot"></span> Creditos
+        </a>
+      </div>
+
+      <div (click)="toggleLogistica()" 
+           style="display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 0.95rem; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); user-select: none;"
+           [style.background]="menuLogisticaAbierto ? 'rgba(255, 255, 255, 0.06)' : 'transparent'"
+           [style.color]="menuLogisticaAbierto ? '#38bdf8' : '#94a3b8'"
+           class="menu-padre">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <i class="pi pi-sitemap"></i>
+          <span>Logística</span>
+        </div>
+        <span [style.transform]="menuLogisticaAbierto ? 'rotate(90deg)' : 'rotate(0deg)'" 
+              style="transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1); font-size: 0.7rem; display: inline-block; opacity: 0.7;">
+          ▶
+        </span>
+      </div>
+
+      <div [style.max-height]="menuLogisticaAbierto ? '240px' : '0px'" 
+           [style.opacity]="menuLogisticaAbierto ? '1' : '0'"
+           style="overflow: hidden; transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease; display: flex; flex-direction: column; gap: 5px; padding-left: 12px; margin-top: 2px; border-left: 1px solid rgba(255, 255, 255, 0.08);">
+        
+        <a routerLink="/productos" routerLinkActive="active-link" (click)="cerrarSidebarMobile()" class="sub-enlace">
+          <i class="pi pi-box"></i>
+          <span class="dot"></span> Productos
+        </a>
+        
+        <a routerLink="/marcas" routerLinkActive="active-link" (click)="cerrarSidebarMobile()" class="sub-enlace">
+          <i class="pi pi-tag"></i>
+          <span class="dot"></span> Marcas
+        </a>
+        
+        <a routerLink="/tipos" routerLinkActive="active-link" (click)="cerrarSidebarMobile()" class="sub-enlace">
+          <i class="pi pi-sitemap"></i>
+          <span class="dot"></span> Categorias
+        </a>
+        
+        <a routerLink="/unidades" routerLinkActive="active-link" (click)="cerrarSidebarMobile()" class="sub-enlace">
+          <i class="pi pi-arrows-alt"></i>
+          <span class="dot"></span> Tamaños
+        </a>
+      </div>
+
+
+      
+
+    </nav>
+
+    <div style="border-top: 1px solid rgba(255,255,255,0.06); padding-top: 15px; text-align: center;">
+      <span style="font-size: 0.75rem; color: #475569; font-weight: 500; letter-spacing: 0.3px;">
+        &copy; 2026 Porquio's S.A.
+      </span>
+    </div>
+  </aside>
+
+  <div class="sidebar-overlay" *ngIf="sidebarMobileAbierto" (click)="toggleSidebarMobile()"></div>
+
+  <main class="main-content">
+    <div style="max-width: 1300px; margin: 0 auto;">
+      <router-outlet></router-outlet>
+    </div>
+  </main>
+
+</div>
+
+<style>
+  /* =========================================================
+     🌍 BASE
+  ========================================================= */
+
+  .app-container {
+    display: flex;
+    min-height: 100vh;
+    font-family: 'Inter', system-ui, sans-serif;
+    background: radial-gradient(circle at top right, #f8fafc, #f1f5f9);
+  }
+
+  /* =========================================================
+     📦 SIDEBAR
+  ========================================================= */
+
+  .sidebar-premium {
+    width: 270px;
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    color: #cbd5e1;
+
+    padding: 35px 24px;
+
+    box-sizing: border-box;
+
+    display: flex;
+    flex-direction: column;
+
+    box-shadow: 4px 0 24px rgba(15, 23, 42, 0.08);
+
+    border-right: 1px solid rgba(255, 255, 255, 0.04);
+
+    position: relative;
+
+    z-index: 10;
+
+    backdrop-filter: blur(14px);
+
+    transition: transform .3s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  /* =========================================================
+     📄 MAIN
+  ========================================================= */
+
+  .main-content {
+    flex: 1;
+    padding: 40px 50px;
+    box-sizing: border-box;
+    overflow-y: auto;
+    position: relative;
+  }
+
+  /* =========================================================
+     📱 MOBILE BUTTON
+  ========================================================= */
+
+  .mobile-toggle {
+    display: none;
+
+    z-index: 10000;
+  }
+
+  /* =========================================================
+     🧭 MENU LINKS
+  ========================================================= */
+
+  .menu-item-dashboard {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    padding: 12px 14px;
+
+    border-radius: 12px;
+
+    text-decoration: none;
+
+    font-weight: 600;
+    font-size: .95rem;
+
+    color: #94a3b8;
+
+    transition: all .25s ease;
+  }
+
+  .menu-item-dashboard:hover {
+    background: linear-gradient(
+      90deg,
+      rgba(56,189,248,.10),
+      rgba(37,99,235,.06)
+    );
+
+    color: #e2e8f0 !important;
+  }
+
+  /* =========================================================
+     📂 MENU PADRE
+  ========================================================= */
+
+  .menu-padre:hover {
+    background: linear-gradient(
+      90deg,
+      rgba(56,189,248,.10),
+      rgba(37,99,235,.06)
+    ) !important;
+
+    color: #e2e8f0 !important;
+  }
+
+  /* =========================================================
+     🔗 SUB LINKS
+  ========================================================= */
+
+  .sub-enlace {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    padding: 10px 16px;
+
+    color: #64748b;
+
+    text-decoration: none;
+
+    font-weight: 500;
+    font-size: .9rem;
+
+    border-radius: 10px;
+
+    transition: all .2s ease;
+
+    position: relative;
+  }
+
+  .sub-enlace .dot {
+    width: 4px;
+    height: 4px;
+
+    background-color: transparent;
+
+    border-radius: 50%;
+
+    transition: all .2s ease;
+  }
+
+  .sub-enlace:hover {
+    background: linear-gradient(
+      90deg,
+      rgba(56,189,248,.10),
+      rgba(37,99,235,.06)
+    );
+
+    color: #e2e8f0 !important;
+  }
+
+  .sub-enlace:hover .dot {
+    background-color: #38bdf8;
+
+    box-shadow: 0 0 8px #38bdf8;
+  }
+
+  /* =========================================================
+     ✅ ACTIVE LINK
+  ========================================================= */
+
+  .active-link {
+    background-color: rgba(37,99,235,.12) !important;
+
+    color: #38bdf8 !important;
+
+    font-weight: 600 !important;
+
+    transition: all .2s ease;
+  }
+
+  .active-link .dot {
+    background-color: #38bdf8 !important;
+
+    width: 6px !important;
+    height: 6px !important;
+
+    box-shadow: 0 0 10px #38bdf8;
+  }
+
+  /* =========================================================
+     📱 RESPONSIVE
+  ========================================================= */
+
+  @media (max-width: 768px) {
+
+    .app-container {
+      flex-direction: column;
+    }
+
+    .sidebar-premium {
+      position: fixed;
+
+      left: 0;
+      top: 0;
+      bottom: 0;
+
+      width: 270px;
+      height: 100vh;
+
+      transform: translateX(-100%);
+
+      z-index: 9999;
+    }
+
+    .sidebar-premium.mobile-open {
+      transform: translateX(0);
+    }
+
+    .main-content {
+      padding: 80px 16px 30px;
+    }
+
+    .mobile-toggle {
+      display: flex;
+
+      position: fixed;
+
+      top: 15px;
+      left: 15px;
+
+      width: 46px;
+      height: 46px;
+
+      background: #0f172a;
+
+      color: #e2e8f0;
+
+      border: 1px solid rgba(255,255,255,.1);
+
+      border-radius: 12px;
+
+      font-size: 1.4rem;
+
+      align-items: center;
+      justify-content: center;
+
+      cursor: pointer;
+
+      box-shadow: 0 4px 12px rgba(15,23,42,.2);
+    }
+
+    .sidebar-overlay {
+      position: fixed;
+
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+
+      background: rgba(15,23,42,.4);
+
+      backdrop-filter: blur(2px);
+
+      z-index: 9998;
+    }
+  }
+</style>

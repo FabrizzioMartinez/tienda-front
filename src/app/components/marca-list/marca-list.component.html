@@ -1,0 +1,109 @@
+<div style="max-width: 1200px; margin: 0 auto; animation: fadeIn 0.3s ease;">
+  
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 1px solid #e2e8f0; padding-bottom: 15px;">
+    <div>
+      <h2 style="color: #1e293b; font-size: 1.8rem; margin: 0; font-weight: 700;">🏷️ Marcas</h2>
+      <p style="color: #64748b; margin: 5px 0 0 0; font-size: 0.95rem;">Administra las marcas comerciales de los productos del inventario.</p>
+    </div>
+    
+    <button (click)="verModal = true" class="saas-btn-dark">
+      ➕ Agregar Nueva Marca
+    </button>
+  </div>
+
+  <div style="background: white; padding: 25px; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
+    
+    <div style="margin-bottom: 24px;">
+      <div style="position: relative; max-width: 400px; width: 100%;">
+        <input type="text" 
+               [(ngModel)]="terminoBusqueda" 
+               placeholder="🔍 Buscar marca por nombre comercial..." 
+               class="premium-input"
+               style="height: 42px;">
+      </div>
+    </div>
+
+    <h3 style="margin-top:0; color:#1e293b; margin-bottom:20px; font-size: 1.2rem;">Marcas Registradas</h3>
+    
+    <div *ngIf="listaMarcas.length === 0" class="saas-alert info">
+      No hay marcas configuradas en la base de datos de Neon.
+    </div>
+
+    <div *ngIf="listaMarcas.length > 0 && marcasFiltradas.length === 0" class="saas-alert warning">
+      No se encontraron marcas que coincidan con "{{ terminoBusqueda }}".
+    </div>
+
+    <div *ngIf="marcasFiltradas.length > 0" style="overflow-x: auto;">
+      <table style="width:100%; border-collapse:collapse; text-align:left;">
+        <thead style="background:#f8fafc; color:#64748b; font-size:0.85rem;">
+          <tr style="border-bottom:1px solid #e2e8f0;">
+            <th style="padding:14px;">Nombre Comercial</th>
+            <th style="padding:14px; text-align:center; width: 120px;">Estado</th>
+            <th style="padding:14px; text-align:center; width: 80px;">Quitar</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let m of marcasFiltradas" style="border-bottom:1px solid #f1f5f9; transition: background 0.15s;">
+            <td style="padding:14px; font-weight:600; color:#334155; font-size: 0.95rem;">{{m.nombre}}</td>
+            <td style="padding:14px; text-align:center;">
+              <span class="local-badge" [ngClass]="m.activo ? 'activo' : 'inactivo'">
+                {{ m.activo ? 'Activo' : 'Inactivo' }}
+              </span>
+            </td>
+            <td style="padding:14px; text-align:center;">
+              <button type="button" 
+                      (click)="solicitarConfirmacion(m.marcaID)" 
+                      title="Eliminar marca"
+                      style="background: none; border: none; color: #ef4444; font-size: 1.1rem; cursor: pointer; padding: 4px 8px; border-radius: 6px; transition: background 0.2s, transform 0.1s; display: inline-flex; align-items: center; justify-content: center;">
+                ✕
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div *ngIf="verModal" class="modal-overlay">
+    <div class="modal-card">
+      <h3 style="margin-top:0; color: #1e293b; margin-bottom: 5px; font-size: 1.3rem; font-weight: 700;">Nueva Marca</h3>
+      <p style="color: #64748b; font-size: 0.85rem; margin: 0 0 25px 0;">Ingresa el nombre comercial para el inventario.</p>
+      
+      <form (ngSubmit)="registrarMarca()">
+        
+        <div class="custom-field-group" style="margin-bottom: 25px;">
+          <input type="text" id="nombre" name="nombreMarca" [(ngModel)]="nuevaMarca.nombre" required placeholder=" " class="premium-input">
+          <label for="nombre" class="custom-label">Nombre de la Marca *</label>
+        </div>
+        
+        <div style="display: flex; gap: 12px; justify-content: flex-end; border-top: 1px solid #e2e8f0; padding-top: 18px;">
+          <button type="button" (click)="verModal = false" class="saas-btn-secondary">Cancelar</button>
+          <button type="submit" class="saas-btn-primary">💾 Guardar Marca</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div *ngIf="verModalConfirmar" class="modal-overlay">
+    <div class="modal-card" style="max-width: 400px; text-align: center;">
+      <div style="font-size: 2.2rem; margin-bottom: 12px;">⚠️</div>
+      <h3 style="margin: 0 0 8px 0; color: #1e293b; font-size: 1.25rem; font-weight: 700;">¿Quitar Marca Comercial?</h3>
+      <p style="color: #64748b; font-size: 0.9rem; margin: 0 0 24px 0; line-height: 1.4;">Esta acción desactivará la marca del sistema. Ya no aparecerá en los formularios de nuevos productos.</p>
+      
+      <div style="display: flex; gap: 12px; justify-content: center;">
+        <button type="button" (click)="verModalConfirmar = false" class="saas-btn-secondary" style="flex: 1;">
+          Cancelar
+        </button>
+        <button type="button" (click)="confirmarEliminacion()" class="saas-btn-primary" style="background: #ef4444; flex: 1;">
+          Sí, Eliminar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="mostrarToast" class="saas-toast">
+    <span style="font-size: 1.2rem;">✅</span>
+    <span style="font-weight: 600; font-size: 0.95rem; color: #1e293b;">{{ mensajeToast }}</span>
+  </div>
+
+</div>

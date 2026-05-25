@@ -1,0 +1,211 @@
+<p-toast></p-toast>
+
+<router-outlet></router-outlet>
+<div class="venta-layout">
+
+  <div class="topbar">
+    <h1 class="title">Nueva Venta</h1>
+  </div>
+
+  <div class="grid">
+
+    <!-- ===================== CLIENTE ===================== -->
+    <div class="col-12 xl:col-8">
+
+      <p-card styleClass="modern-card">
+
+        <div class="card-header">
+          <div class="header-icon blue-gradient">
+            <i class="pi pi-user"></i>
+          </div>
+          <h3>Información del Cliente</h3>
+        </div>
+
+        <div class="grid formgrid mt-3">
+
+          <div class="col-12 md:col-4">
+            <label>Nombre / RUC</label>
+            <input pInputText class="w-full" [(ngModel)]="nuevaVenta.clienteNombre" />
+          </div>
+
+          <div class="col-12 md:col-3">
+            <label>Tipo Comprobante</label>
+            <p-select
+              class="w-full"
+              [options]="tiposComprobante"
+              [(ngModel)]="nuevaVenta.tipoComprobante"
+              optionLabel="label"
+              optionValue="value">
+            </p-select>
+          </div>
+
+          <div class="col-12 md:col-2">
+            <label>Tipo Documento</label>
+            <p-select
+              class="w-full"
+              [options]="tiposDocumento"
+              [(ngModel)]="nuevaVenta.tipoDocumento"
+              optionLabel="label"
+              optionValue="value">
+            </p-select>
+          </div>
+
+          <div class="col-12 md:col-3">
+            <label>Número Documento</label>
+            <input pInputText class="w-full" [(ngModel)]="nuevaVenta.numeroComprobante" />
+          </div>
+
+          <div class="col-12 mt-3">
+            <div class="flex align-items-center gap-2 p-3 border-round surface-border bg-surface-50">
+              <p-checkbox [(ngModel)]="nuevaVenta.esCredito" [binary]="true" inputId="esCredito"></p-checkbox>
+              <label for="esCredito">¿Es una venta a crédito?</label>
+            </div>
+          </div>
+
+        </div>
+      </p-card>
+
+      <!-- ===================== PRODUCTOS ===================== -->
+      <p-card styleClass="modern-card mt-4">
+
+        <div class="card-header">
+          <div class="header-icon green-gradient">
+            <i class="pi pi-shopping-cart"></i>
+          </div>
+          <h3>Agregar Productos</h3>
+        </div>
+
+        <div class="grid mt-3 align-items-end">
+
+          <div class="col-12 lg:col-7">
+            <label>Buscar producto</label>
+            <p-autoComplete 
+              id="prod" 
+              class="w-full" 
+              [(ngModel)]="productoSeleccionado" 
+              [suggestions]="sugerenciasProductos" 
+              (completeMethod)="buscarProductos($event)" 
+              (onSelect)="onProductoSeleccionado($event)" 
+              optionLabel="nombre" 
+              showClear="true"
+              [dropdown]="true" 
+              appendTo="body">
+            </p-autoComplete>
+          </div>
+
+          <div class="col-12 lg:col-5">
+            <div class="flex gap-2 align-items-end">
+
+              <div class="w-full">
+                <label>Cantidad</label>
+                <p-inputNumber
+                  class="w-full"
+                  [(ngModel)]="cantidadSeleccionada"
+                  [min]="1">
+                </p-inputNumber>
+              </div>
+
+              <button 
+                pButton 
+                label="Agregar" 
+                class="p-button-sm" 
+                (click)="agregarAlCarrito()" 
+                [disabled]="!productoSeleccionado || productoSeleccionado.stock === 0">
+              </button>
+
+            </div>
+          </div>
+
+        </div>
+      </p-card>
+
+      <!-- ===================== DETALLE ===================== -->
+      <p-card styleClass="modern-card mt-4">
+
+        <div class="card-header">
+          <div class="header-icon purple-gradient">
+            <i class="pi pi-list"></i>
+          </div>
+          <h3>Detalle de Venta</h3>
+        </div>
+
+        <p-table
+          [value]="nuevaVenta.detalles"
+          responsiveLayout="scroll"
+          styleClass="modern-table mt-3">
+
+          <ng-template pTemplate="header">
+            <tr>
+              <th style="text-align: center;">Producto</th>
+              <th style="text-align: center;">Precio</th>
+              <th style="text-align: center;">Cantidad</th>
+              <th style="text-align: center;">Subtotal</th>
+              <th style="text-align: center;"></th>
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="body" let-item let-i="rowIndex">
+            <tr>
+              <td>{{ item.nombreProducto }}</td>
+              <td style="text-align: center;">S/ {{ item.precioUnitario | number:'1.2-2' }}</td>
+              <td style="text-align: center;">
+                {{ item.cantidad }}
+              </td>
+              <td style="text-align: center;" >S/ {{ item.subtotal | number:'1.2-2' }}</td>
+              <td>
+                <button
+                  pButton
+                  icon="pi pi-trash"
+                  class="p-button-rounded p-button-danger p-button-text"
+                  (click)="quitarDelCarrito(i)">
+                </button>
+              </td>
+            </tr>
+          </ng-template>
+
+        </p-table>
+      </p-card>
+    </div>
+
+    <!-- ===================== RESUMEN ===================== -->
+    <div class="col-12 xl:col-4">
+
+      <div class="summary-panel">
+
+        <div class="summary-top">
+          <div class="summary-icon">
+            <i class="pi pi-wallet"></i>
+          </div>
+          <div>
+            <small>TOTAL</small>
+            <h2>S/ {{ nuevaVenta.total | number:'1.2-2' }}</h2>
+          </div>
+        </div>
+
+        <div class="summary-divider"></div>
+
+        <div class="summary-info">
+          <div class="summary-row">
+            <span>Cnt.Productos: </span>
+            <strong>{{ nuevaVenta.detalles.length }}</strong>
+          </div>
+
+          <div class="summary-row">
+            <span>Comprobante: </span>
+            <strong>{{ nuevaVenta.tipoComprobante || '-' }}</strong>
+          </div>
+        </div>
+
+        <button
+          pButton
+          label="Registrar Venta"
+          icon="pi pi-check"
+          class="btn-save w-full mt-4"
+          (click)="registrarVenta()">
+        </button>
+
+      </div>
+    </div>
+
+  </div>
+</div>

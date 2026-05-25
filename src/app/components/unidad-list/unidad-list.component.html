@@ -1,0 +1,100 @@
+<div style="max-width: 1200px; margin: 0 auto; animation: fadeIn 0.3s ease;">
+  
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 1px solid #e2e8f0; padding-bottom: 15px;">
+    <div>
+      <h2 style="color: #1e293b; font-size: 1.8rem; margin: 0; font-weight: 700;">⚖️ Tamaños</h2>
+      <p style="color: #64748b; margin: 5px 0 0 0; font-size: 0.95rem;">Establece las métricas de volumen, peso o capacidad para el desglose de los artículos.</p>
+    </div>
+    
+    <button (click)="verModal = true" class="saas-btn-dark">
+      ➕ Agregar Nueva Unidad
+    </button>
+  </div>
+
+  <div style="background: white; padding: 25px; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
+    
+    <div style="margin-bottom: 24px;">
+      <div style="position: relative; max-width: 400px; width: 100%;">
+        <input type="text" 
+               [(ngModel)]="terminoBusqueda" 
+               placeholder="🔍 Buscar unidad de medida por nombre..." 
+               class="premium-input"
+               style="height: 42px;">
+      </div>
+    </div>
+
+    <h3 style="margin-top:0; color:#1e293b; margin-bottom:20px; font-size: 1.2rem;">Unidades del Sistema</h3>
+    
+    <div *ngIf="listaUnidades.length === 0" class="saas-alert info">
+      No hay unidades métricas configuradas en Neon.
+    </div>
+
+    <div *ngIf="listaUnidades.length > 0 && unidadesFiltradas.length === 0" class="saas-alert warning">
+      No se encontraron unidades que coincidan con "{{ terminoBusqueda }}".
+    </div>
+
+    <div *ngIf="unidadesFiltradas.length > 0" style="overflow-x: auto;">
+      <table style="width:100%; border-collapse:collapse; text-align:left;">
+        <thead style="background:#f8fafc; color:#64748b; font-size:0.85rem;">
+          <tr style="border-bottom:1px solid #e2e8f0;">
+            <th style="padding:14px;">Magnitud / Nombre</th>
+            <th style="padding:14px; text-align:center; width: 140px;">Abreviatura</th>
+            <th style="padding:14px; text-align:center; width: 120px;">Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let u of unidadesFiltradas" style="border-bottom:1px solid #f1f5f9; transition: background 0.15s;">
+            <td style="padding:14px; font-weight:600; color:#334155; font-size: 0.95rem;">📋 {{u.nombre}}</td>
+            <td style="padding:14px; text-align:center;">
+              <span class="local-badge abreviatura">
+                {{u.abreviatura}}
+              </span>
+            </td>
+            <td style="padding:14px; text-align:center;">
+              <span class="local-badge" [ngClass]="u.activo ? 'vigente' : 'inactivo'">
+                {{ u.activo ? 'Vigente' : 'Inactivo' }}
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div *ngIf="verModal" class="modal-overlay">
+    <div class="modal-card">
+      
+      <h3 style="margin-top:0; color: #1e293b; margin-bottom: 5px; font-size: 1.3rem; font-weight: 700;">Nueva Unidad de Medida</h3>
+      <p style="color: #64748b; font-size: 0.85rem; margin: 0 0 25px 0;">Establece el nombre y símbolo comercial para las métricas.</p>
+      
+      <form (ngSubmit)="registrarUnidad()">
+        
+        <div class="custom-field-group" style="margin-bottom: 24px;">
+          <input type="text" id="nombreUnidad" name="nombreUnidad" [(ngModel)]="nuevaUnidad.nombre" required placeholder=" " class="premium-input">
+          <label for="nombreUnidad" class="custom-label">Nombre de la Unidad *</label>
+        </div>
+
+        <div class="custom-field-group" style="margin-bottom: 25px;">
+          <input type="text" id="abreviaturaUnidad" name="abreviaturaUnidad" [(ngModel)]="nuevaUnidad.abreviatura" required placeholder=" " class="premium-input">
+          <label for="abreviaturaUnidad" class="custom-label">Abreviatura Comercial *</label>
+        </div>
+
+        <div style="display: flex; gap: 12px; justify-content: flex-end; border-top: 1px solid #e2e8f0; padding-top: 18px;">
+          <button type="button" (click)="verModal = false" class="saas-btn-secondary">
+            Cancelar
+          </button>
+          <button type="submit" class="saas-btn-primary">
+            ⚖️ Guardar Unidad
+          </button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+
+  <div *ngIf="mostrarToast" class="saas-toast">
+    <span style="font-size: 1.2rem;">✅</span>
+    <span style="font-weight: 600; font-size: 0.95rem; color: #1e293b;">{{ mensajeToast }}</span>
+  </div>
+
+</div>

@@ -1,0 +1,753 @@
+/* ==========================================================================
+   🌍 DASHBOARD CONTAINER
+========================================================================== */
+
+.dashboard-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+  animation: fadeIn 0.4s ease;
+}
+
+/* ==========================================================================
+   🧩 HEADER
+========================================================================== */
+
+.dashboard-header {
+  margin-bottom: 25px;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 15px;
+}
+
+.dashboard-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  margin: 0;
+
+  font-size: 1.8rem;
+  font-weight: 700;
+
+  color: #1e293b;
+}
+
+.dashboard-subtitle {
+  color: #64748b;
+  margin: 5px 0 0;
+  font-size: 0.95rem;
+}
+
+/* ==========================================================================
+   📊 KPI GRID
+========================================================================== */
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 22px;
+  margin-bottom: 30px;
+}
+
+/* ==========================================================================
+   📦 KPI CARD
+========================================================================== */
+
+.kpi-card {
+  background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+  padding: 24px;
+  border-radius: 18px;
+  border: 1px solid #edf2f7;
+
+  display: flex;
+  align-items: center;
+  gap: 18px;
+
+  box-shadow:
+    0 4px 10px rgba(15, 23, 42, 0.03),
+    0 12px 30px rgba(15, 23, 42, 0.04);
+
+  backdrop-filter: blur(8px);
+
+  transition:
+    transform .2s ease,
+    box-shadow .2s ease,
+    border-color .2s ease;
+}
+
+.kpi-card:hover {
+  transform: translateY(-4px);
+
+  border-color: #dbeafe;
+
+  box-shadow:
+    0 10px 20px rgba(37, 99, 235, 0.06),
+    0 20px 40px rgba(15, 23, 42, 0.06);
+}
+
+/* ==========================================================================
+   🎨 KPI ICONS
+========================================================================== */
+
+.kpi-icon {
+  width: 62px;
+  height: 62px;
+
+  border-radius: 16px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 1.6rem;
+
+  flex-shrink: 0;
+}
+
+/* Colores KPI */
+
+.kpi-blue {
+  background: #dbeafe;
+  color: #2563eb;
+}
+
+.kpi-red {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.kpi-green {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.kpi-orange {
+  background: #ffedd5;
+  color: #ea580c;
+}
+
+/* ==========================================================================
+   📝 KPI TEXT
+========================================================================== */
+
+.kpi-info h3 {
+  margin: 0;
+
+  font-size: 0.78rem;
+
+  color: #64748b;
+
+  text-transform: uppercase;
+
+  letter-spacing: .8px;
+
+  font-weight: 700;
+}
+
+.kpi-info p {
+  margin: 6px 0 0;
+
+  font-size: 2rem;
+
+  line-height: 1;
+
+  font-weight: 800;
+
+  color: #020617;
+}
+
+/* ==========================================================================
+   ⚡ QUICK ACTIONS
+========================================================================== */
+
+.quick-actions-section {
+  background: #ffffff;
+
+  padding: 22px 24px;
+
+  border-radius: 18px;
+
+  border: 1px solid #e2e8f0;
+
+  margin-bottom: 30px;
+
+  box-shadow:
+    0 4px 10px rgba(15, 23, 42, 0.03);
+}
+
+.actions-layout {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 16px;
+}
+
+/* ==========================================================================
+   🔘 BUTTONS
+========================================================================== */
+
+.saas-btn-primary,
+.saas-btn-dark,
+.saas-btn-secondary {
+  border: none;
+
+  padding: 12px 20px;
+
+  border-radius: 10px;
+
+  cursor: pointer;
+
+  font-size: 0.95rem;
+
+  font-weight: 600;
+
+  transition:
+    transform .15s ease,
+    background .2s ease,
+    box-shadow .2s ease;
+}
+
+/* PRIMARY */
+
+.saas-btn-primary {
+  background: linear-gradient(
+    135deg,
+    #2563eb,
+    #1d4ed8
+  );
+
+  color: #e2e8f0;
+}
+
+.saas-btn-primary:hover {
+  transform: translateY(-1px);
+
+  box-shadow:
+    0 10px 20px rgba(37,99,235,.20);
+}
+
+/* DARK */
+
+.saas-btn-dark {
+  background: linear-gradient(
+    135deg,
+    #0f172a,
+    #1e293b
+  );
+
+  color: #e2e8f0;
+}
+
+.saas-btn-dark:hover {
+  transform: translateY(-1px);
+
+  box-shadow:
+    0 10px 20px rgba(15,23,42,.18);
+}
+
+/* SECONDARY */
+
+.saas-btn-secondary {
+  background: white;
+  color: #334155;
+
+  border: 1px solid #cbd5e1;
+}
+
+.saas-btn-secondary:hover {
+  background: #f8fafc;
+}
+
+/* ==========================================================================
+   🚨 CRITICAL SECTION
+========================================================================== */
+
+.critical-section {
+  background: white;
+
+  padding: 24px;
+
+  border-radius: 18px;
+
+  border: 1px solid #e2e8f0;
+
+  box-shadow:
+    0 4px 10px rgba(15, 23, 42, 0.03);
+}
+
+/* ==========================================================================
+   📋 SAAS TABLE
+========================================================================== */
+
+.saas-table {
+  width: 100%;
+
+  border-collapse: separate;
+  border-spacing: 0;
+
+  overflow: hidden;
+
+  border-radius: 14px;
+
+  margin-top: 15px;
+}
+
+.saas-table thead tr {
+  background: #f8fafc;
+}
+
+.saas-table th {
+  padding: 15px;
+
+  font-size: 0.82rem;
+
+  color: #64748b;
+
+  font-weight: 700;
+
+  text-transform: uppercase;
+
+  letter-spacing: .5px;
+}
+
+.saas-table td {
+  padding: 16px 15px;
+
+  border-bottom: 1px solid #f1f5f9;
+
+  color: #334155;
+
+  font-size: 0.92rem;
+}
+
+.saas-table tbody tr {
+  transition: background .15s ease;
+}
+
+.saas-table tbody tr:hover {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(37,99,235,.03),
+      rgba(37,99,235,.01)
+    );
+}
+
+.saas-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* ==========================================================================
+   🏷️ BADGES
+========================================================================== */
+
+.local-badge {
+  padding: 6px 12px;
+
+  border-radius: 999px;
+
+  font-size: 0.74rem;
+
+  font-weight: 700;
+
+  text-transform: uppercase;
+
+  display: inline-block;
+}
+
+.local-badge.agotado {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.local-badge.urgente {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+/* ==========================================================================
+   🧾 PRIME DIALOG FIX
+========================================================================== */
+
+::ng-deep .p-dialog {
+  background: #ffffff !important;
+  color: #334155 !important;
+
+  border-radius: 20px !important;
+
+  overflow: hidden;
+
+  border: none;
+
+  box-shadow:
+    0 25px 50px rgba(15,23,42,.18);
+}
+
+::ng-deep .p-dialog-header {
+  background: #ffffff !important;
+  color: #0f172a !important;
+
+  padding: 22px 24px;
+
+  border-bottom: 1px solid #e2e8f0;
+}
+
+::ng-deep .p-dialog-content {
+  background: #fcfcfd !important;
+  color: #334155 !important;
+
+  padding: 24px;
+}
+
+::ng-deep .p-dialog-title {
+  color: #0f172a !important;
+
+  font-size: 1.1rem;
+
+  font-weight: 700;
+}
+
+::ng-deep .p-dialog label,
+::ng-deep .p-dialog span,
+::ng-deep .p-dialog td,
+::ng-deep .p-dialog th {
+  color: #334155 !important;
+}
+
+::ng-deep .p-inputtext,
+::ng-deep .p-inputnumber-input,
+::ng-deep .p-autocomplete-input {
+  background: #ffffff !important;
+  color: #0f172a !important;
+}
+
+/* ==========================================================================
+   🛒 MODAL GRID
+========================================================================== */
+
+.modal-grid-carrito {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  width: 100%;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* ==========================================================================
+   ➕ ADD BUTTON
+========================================================================== */
+
+.btn-add-simple {
+  width: 42px;
+  height: 42px;
+
+  border-radius: 10px;
+
+  border: none;
+
+  background: linear-gradient(
+    135deg,
+    #2563eb,
+    #1d4ed8
+  );
+
+  color: #e2e8f0;
+
+  cursor: pointer;
+
+  transition:
+    transform .15s ease,
+    box-shadow .2s ease;
+}
+
+.btn-add-simple:hover {
+  transform: scale(1.06);
+
+  box-shadow:
+    0 10px 18px rgba(37,99,235,.28);
+}
+
+/* ==========================================================================
+   🧩 EXTRA CLASSES
+========================================================================== */
+
+.section-header {
+  margin-bottom: 14px;
+}
+
+.section-header h3,
+.section-header h4 {
+  margin: 0;
+
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  color: #1e293b;
+}
+
+.section-header p {
+  margin: 4px 0 0;
+  color: #64748b;
+  font-size: 0.85rem;
+}
+
+.table-container {
+  overflow-x: auto;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.product-name {
+  font-weight: 600;
+  color: #334155;
+}
+
+.product-price {
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.empty-state {
+  padding: 15px;
+
+  background: #f8fafc;
+
+  color: #64748b;
+
+  border-radius: 10px;
+
+  border: 1px solid #e2e8f0;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ==========================================================================
+   ✨ ANIMATION
+========================================================================== */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ==========================================================================
+   📱 RESPONSIVE
+========================================================================== */
+
+@media (max-width: 768px) {
+
+  .dashboard-container {
+    padding: 16px;
+  }
+
+  .actions-layout {
+    flex-direction: column;
+  }
+
+  .saas-btn-primary,
+  .saas-btn-dark,
+  .saas-btn-secondary {
+    width: 100%;
+  }
+
+  .modal-grid-carrito {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .kpi-info p {
+    font-size: 1.6rem;
+  }
+
+  .kpi-card {
+    padding: 20px;
+  }
+}
+
+
+.custom-table {
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+/* HEADER MÁS LIMPIO */
+.custom-table thead th {
+  background: #f8fafc !important;
+  color: #334155;
+  font-weight: 600;
+  border-bottom: 1px solid #e2e8f0 !important;
+}
+
+/* FILAS */
+.table-row {
+  transition: all 0.2s ease;
+}
+
+.table-row:hover {
+  background: #f1f5f9 !important;
+}
+
+/* PRODUCTO */
+.product-name {
+  font-weight: 600;
+  color: #0f172a;
+}
+
+/* PRECIO */
+.price-cell {
+  color: #334155;
+  font-weight: 500;
+}
+
+/* CANTIDAD BADGE */
+.qty-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #e0f2fe;
+  color: #0369a1;
+  font-weight: 600;
+  min-width: 40px;
+}
+
+/* SUBTOTAL DESTACADO */
+.subtotal-cell {
+  font-weight: 700;
+  color: #0f172a;
+}
+
+/* BOTÓN DELETE */
+.delete-btn {
+  opacity: 0.7;
+  transition: 0.2s;
+}
+
+.delete-btn:hover {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+/* EMPTY STATE */
+.empty-state {
+  padding: 30px;
+  text-align: center;
+  color: #94a3b8;
+}
+
+.empty-state i {
+  font-size: 2rem;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.input-clean {
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+}
+
+.input-clean:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 0.15rem rgba(59,130,246,.15);
+}
+
+/* botón agregar */
+.add-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+}
+
+/* tabla limpia */
+.custom-table thead th {
+  background: #f8fafc !important;
+  color: #334155;
+  font-weight: 600;
+}
+
+.custom-table tbody tr:hover {
+  background: #f1f5f9 !important;
+}
+
+/* cantidad badge */
+.qty-badge {
+  background: #e0f2fe;
+  color: #0369a1;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-weight: 600;
+}
+
+/* eliminar */
+.delete-btn {
+  opacity: 0.7;
+}
+
+.delete-btn:hover {
+  opacity: 1;
+  transform: scale(1.1);
+  transition: 0.2s;
+}
+
+/* empty state */
+.empty-state {
+  text-align: center;
+  padding: 30px;
+  color: #94a3b8;
+}
+
+.empty-state i {
+  font-size: 2rem;
+  margin-bottom: 8px;
+  display: block;
+}
+
+
+/* =========================================================
+   🧾 FIX SOLO TABLA DENTRO DEL MODAL (NO TOCA DASHBOARD)
+========================================================= */
+
+::ng-deep .p-dialog .saas-table,
+::ng-deep .p-dialog .custom-table {
+  background: #ffffff !important;
+  color: #334155 !important;
+}
+
+/* HEADER */
+::ng-deep .p-dialog table thead th {
+  background: #f8fafc !important;
+  color: #334155 !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+}
+
+/* CELDAS */
+::ng-deep .p-dialog table tbody td {
+  background: #ffffff !important;
+  color: #334155 !important;
+}
+
+/* HOVER */
+::ng-deep .p-dialog table tbody tr:hover {
+  background: #f1f5f9 !important;
+}
+
+/* BORDE GENERAL */
+::ng-deep .p-dialog table {
+  border-color: #e2e8f0 !important;
+}

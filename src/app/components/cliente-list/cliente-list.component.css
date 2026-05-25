@@ -1,0 +1,51 @@
+.card {
+  background: #ffffff;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  margin: 20px;
+}
+
+.title {
+  color: #0f172a;
+  margin-bottom: 1.5rem;
+  font-weight: 700;
+}
+
+
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.card {
+  background: #ffffff;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  margin: 20px;
+}
+
+.title {
+  color: #0f172a;
+  font-weight: 700;
+  margin: 0;
+}
+
+
+.clientes-table {
+  text-align: center;
+}
+
+/* Centra encabezados */
+.clientes-table th {
+  text-align: center !important;
+}
+
+/* Centra contenido de celdas */
+.clientes-table td {
+  text-align: center !important;
+  vertical-align: middle;
+}
