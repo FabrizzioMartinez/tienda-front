@@ -27,13 +27,20 @@ export class VentaService {
    * @param fecha Objeto Date de JavaScript
    */
   getPorFecha(fecha: Date): Observable<VentaDto[]> {
-    // Convertimos la fecha a formato ISO (YYYY-MM-DD) para que C# la reciba correctamente
-    const fechaFormateada = fecha.toISOString().split('T')[0];
-    
-    // Usamos HttpParams para enviar la fecha como query parameter
-    const params = new HttpParams().set('fecha', fechaFormateada);
 
-    return this.http.get<ApiResponse<VentaDto[]>>(`${this.apiUrl}/por-fecha`, { params })
-      .pipe(map(response => response.data));
-  }
+  // Obtener fecha en zona horaria de Perú
+  const fechaPeru = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'America/Lima',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  }).format(fecha);
+
+  // en-CA devuelve YYYY-MM-DD
+  const params = new HttpParams().set('fecha', fechaPeru);
+
+  return this.http
+    .get<ApiResponse<VentaDto[]>>(`${this.apiUrl}/por-fecha`, { params })
+    .pipe(map(response => response.data));
+}
 }
