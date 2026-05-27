@@ -15,27 +15,34 @@
     [paginator]="true" 
     [rows]="10" 
     styleClass="p-datatable-striped clientes-table"
-    [responsiveLayout]="'scroll'">
-    
-    <ng-template pTemplate="header">
+    [responsiveLayout]="'scroll'"
+    [rowTrackBy]="trackByClienteId"> <ng-template pTemplate="header">
       <tr>
-        <th style="display:none">ID</th>
         <th>Nombre / Razón Social</th>
         <th>Tipo Doc.</th>
         <th>Número</th>
         <th>Email</th>
         <th>Teléfono</th>
+        <th style="width: 80px; text-align: center;">Acciones</th>
       </tr>
     </ng-template>
 
     <ng-template pTemplate="body" let-cliente>
       <tr>
-        <td style="display:none">{{ cliente.clienteID }}</td>
         <td>{{ cliente.nombreRazonSocial }}</td>
-        <td>{{ cliente.tipoDocumento }}</td>
+        <td>{{ cliente.tipoDocumentoTexto }}</td>
         <td>{{ cliente.numeroDocumento }}</td>
         <td>{{ cliente.email }}</td>
         <td>{{ cliente.telefono }}</td>
+        <td style="text-align: center;">
+          <button pButton 
+                  type="button" 
+                  icon="pi pi-pencil" 
+                  class="p-button-rounded p-button-text p-button-warning" 
+                  title="Editar Cliente"
+                  (click)="editarCliente(cliente)">
+          </button>
+        </td>
       </tr>
     </ng-template>
 
@@ -44,10 +51,10 @@
         <td colspan="6" style="text-align:center;">No se encontraron clientes registrados.</td>
       </tr>
     </ng-template>
-  </p-table>
+</p-table>
 </div>
 
-<p-dialog header="Registrar Cliente" 
+<p-dialog [header]="nuevoCliente.clienteID > 0 ? 'Editar Cliente' : 'Registrar Cliente'" 
           [(visible)]="displayModal" 
           [modal]="true" 
           [style]="{width: '500px'}" 
@@ -57,14 +64,14 @@
     <div class="p-fluid grid">
         
         <div class="col-12 field mb-3">
-            <label for="nombre" class="font-semibold block mb-2">Nombre / Razón Social</label>
-            <input id="nombre" type="text" pInputText [(ngModel)]="nuevoCliente.nombreRazonSocial" class="w-full" />
+            <label for="nombre" class="font-semibold block mb-2" >Nombre / Razón Social</label>
+            <input id="nombre" type="text" pInputText [(ngModel)]="nuevoCliente.nombreRazonSocial" class="w-full"  style="text-transform: uppercase;"/>
         </div>
         
         <div class="col-6 field mb-3">
             <label for="tipoDoc" class="font-semibold block mb-2">Tipo Documento</label>
             <p-select [options]="tiposDocumento" 
-                      [(ngModel)]="nuevoCliente.tipoDocumento" 
+                      [(ngModel)]="nuevoCliente.tipoDocumentoCode" 
                       placeholder="Seleccione"
                       styleClass="w-full">
             </p-select>
@@ -77,7 +84,7 @@
 
         <div class="col-12 field mb-3">
             <label for="email" class="font-semibold block mb-2">Email</label>
-            <input id="email" type="email" pInputText [(ngModel)]="nuevoCliente.email" class="w-full" />
+            <input id="email" type="email" pInputText [(ngModel)]="nuevoCliente.email" class="w-full" style="text-transform: uppercase;"/>
         </div>
 
         <div class="col-12 field mb-3">

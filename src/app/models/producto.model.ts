@@ -6,6 +6,7 @@ export interface ProductoBusquedaDto {
   nombre: string;
   precio: number;
   stock: number;
+  tamaño: string;
 }
 
 // 2. DTO para la gestión detallada (ej. tabla principal de inventario)

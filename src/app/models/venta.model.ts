@@ -24,6 +24,13 @@ export interface VentaCreateDto {
   esCredito: boolean;
   fechaRegistro: Date;
   tipoDocumento: string;
+  
+  // 🚀 NUEVOS CAMPOS DE PAGO
+  esEfectivo: boolean;
+  montoEfectivo: number | null;
+  esDigital: boolean;
+  montoDigital: number | null;
+
   detalles: DetalleVentaDto[];
 }
 
@@ -39,5 +46,12 @@ export interface VentaDto {
   total: number;
   esCredito: boolean;
   fechaRegistro: Date;
+
+  // 🚀 NUEVOS CAMPOS DE PAGO
+  esEfectivo: boolean;
+  montoEfectivo: number | null;
+  esDigital: boolean;
+  montoDigital: number | null;
+
   detalles: DetalleVentaDto[];
 }

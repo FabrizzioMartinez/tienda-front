@@ -1,8 +1,6 @@
 import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
-
-// Servicios y Modelos
 import { ProductoService } from '../../services/producto.service';
 import { MarcaService } from '../../services/marca.service';
 import { ProductoDto } from '../../models/producto.model';
@@ -22,9 +20,6 @@ export class DashboardComponent implements OnInit {
   totalAlertas = 0;
   totalMarcas = 0;
   ventasDia = 0;
-
-  // Filtramos sobre el DTO. 
-  // Nota: Si necesitas stock para alertas, el DTO debe incluirlo.
   productosCriticos: ProductoDto[] = [];
 
   constructor(
@@ -73,7 +68,6 @@ export class DashboardComponent implements OnInit {
   
   this.ventaService.getPorFecha(hoy).subscribe({
     next: (ventas) => {
-      console.log('Ventas recibidas del backend:', ventas); // <-- MIRA LA CONSOLA
       this.ventasDia = ventas.reduce((acumulado, venta) => acumulado + venta.total, 0);
       this.cdr.markForCheck();
     },

@@ -13,7 +13,8 @@ export interface ClienteDto {
   clienteID: number;
   nombreRazonSocial: string;
   numeroDocumento: string;
-  tipoDocumento: string;
+  tipoDocumentoCode: string;  // 👈 Cambiado aquí
+  tipoDocumentoTexto: string; // 👈 Cambiado aquí
   email?: string;
   telefono?: string;
 }
