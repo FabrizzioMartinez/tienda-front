@@ -33,31 +33,52 @@
       No se encontraron unidades que coincidan con "{{ terminoBusqueda }}".
     </div>
 
-    <div *ngIf="unidadesFiltradas.length > 0" style="overflow-x: auto;">
-      <table style="width:100%; border-collapse:collapse; text-align:left;">
-        <thead style="background:#f8fafc; color:#64748b; font-size:0.85rem;">
-          <tr style="border-bottom:1px solid #e2e8f0;">
-            <th style="padding:14px;">Magnitud / Nombre</th>
-            <th style="padding:14px; text-align:center; width: 140px;">Abreviatura</th>
-            <th style="padding:14px; text-align:center; width: 120px;">Estado</th>
+    <div *ngIf="unidadesFiltradas.length > 0" class="card mt-4">
+      <p-table 
+        [value]="unidadesFiltradas" 
+        [paginator]="true" 
+        [rows]="5" 
+        [rowsPerPageOptions]="[5, 10, 20]"
+        responsiveLayout="scroll"
+        styleClass="p-datatable-striped modern-table"
+        currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} unidades"
+        [showCurrentPageReport]="true">
+        
+        <ng-template pTemplate="header">
+          <tr>
+            <th style="padding: 14px; background: #f8fafc; color: #64748b; font-size: 0.85rem; font-weight: 600; border-bottom: 1px solid #e2e8f0;">Magnitud / Nombre</th>
+            <th style="text-align: center; padding: 14px; background: #f8fafc; color: #64748b; font-size: 0.85rem; font-weight: 600; border-bottom: 1px solid #e2e8f0; width: 140px;">Abreviatura</th>
+            <th style="text-align: center; padding: 14px; background: #f8fafc; color: #64748b; font-size: 0.85rem; font-weight: 600; border-bottom: 1px solid #e2e8f0; width: 120px;">Estado</th>
           </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let u of unidadesFiltradas" style="border-bottom:1px solid #f1f5f9; transition: background 0.15s;">
-            <td style="padding:14px; font-weight:600; color:#334155; font-size: 0.95rem;">📋 {{u.nombre}}</td>
-            <td style="padding:14px; text-align:center;">
+        </ng-template>
+
+        <ng-template pTemplate="body" let-u>
+          <tr style="border-bottom: 1px solid #f1f5f9;">
+            <td style="padding: 14px; font-weight: 600; color: #334155; font-size: 0.95rem;">
+              📋 {{ u.nombre }}
+            </td>
+            <td style="text-align: center; padding: 14px;">
               <span class="local-badge abreviatura">
-                {{u.abreviatura}}
+                {{ u.abreviatura }}
               </span>
             </td>
-            <td style="padding:14px; text-align:center;">
+            <td style="text-align: center; padding: 14px;">
               <span class="local-badge" [ngClass]="u.activo ? 'vigente' : 'inactivo'">
                 {{ u.activo ? 'Vigente' : 'Inactivo' }}
               </span>
             </td>
           </tr>
-        </tbody>
-      </table>
+        </ng-template>
+
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="3" style="text-align: center; padding: 30px; color: #64748b;">
+              No se encontraron unidades de medida.
+            </td>
+          </tr>
+        </ng-template>
+
+      </p-table>
     </div>
   </div>
 
@@ -80,7 +101,7 @@
         </div>
 
         <div style="display: flex; gap: 12px; justify-content: flex-end; border-top: 1px solid #e2e8f0; padding-top: 18px;">
-          <button type="button" (click)="verModal = false" class="saas-btn-secondary">
+          <button type="button" (click)="cerrarModal()" class="saas-btn-secondary">
             Cancelar
           </button>
           <button type="submit" class="saas-btn-primary">

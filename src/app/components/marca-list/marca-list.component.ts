@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MarcaService } from '../../services/marca.service';
 import { MarcaDto } from '../../models/marca.model';
+import { TableModule } from 'primeng/table';
 
 @Component({
   selector: 'app-marca-list',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule,TableModule],
   templateUrl: './marca-list.component.html',
   styleUrl: './marca-list.component.css',
 })
@@ -83,6 +84,12 @@ export class MarcaListComponent implements OnInit {
       },
       error: (err) => console.error('Error al deshabilitar:', err)
     });
+  }
+
+  cerrarModal(): void {
+    this.verModal = false;
+    this.nuevaMarca = { marcaID: 0, nombre: '', activo: true }; // 🧼 Limpieza profunda
+    this.cdr.markForCheck();
   }
 
   private mostrarMensaje(mensaje: string): void {

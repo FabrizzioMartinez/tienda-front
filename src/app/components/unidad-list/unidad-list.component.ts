@@ -4,11 +4,12 @@ import { FormsModule } from '@angular/forms';
 
 import { UnidadMedidaService } from '../../services/unidad-medida.service';
 import { UnidadMedida, UnidadMedidaDto } from '../../models/unidad-medida.model';
+import { TableModule } from 'primeng/table';
 
 @Component({
   selector: 'app-unidad-list',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule,TableModule],
   templateUrl: './unidad-list.component.html',
   styleUrl: './unidad-list.component.css',
 })
@@ -66,6 +67,17 @@ export class UnidadListComponent implements OnInit {
       },
       error: (err) => console.error('Error al registrar:', err)
     });
+  }
+  // 🧼 Método para cerrar el formulario y resetear limpiamente todos los campos
+  cerrarModal(): void {
+    this.verModal = false;
+    this.nuevaUnidad = { 
+      unidadMedidaID: 0, 
+      nombre: '', 
+      abreviatura: '', 
+      activo: true 
+    };
+    this.cdr.markForCheck();
   }
 
   // Método auxiliar para no repetir código de Toast

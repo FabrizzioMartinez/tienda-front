@@ -4,11 +4,12 @@ import { FormsModule } from '@angular/forms';
 
 import { TipoProductoService } from '../../services/tipo-producto.service';
 import { TipoProducto, TipoProductoDto } from '../../models/tipo-producto.model';
+import { TableModule } from 'primeng/table';
 
 @Component({
   selector: 'app-tipo-list',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TableModule],
   templateUrl: './tipo-list.component.html',
   styleUrl: './tipo-list.component.css',
 })
@@ -59,9 +60,8 @@ export class TipoListComponent implements OnInit {
 
     this.tipoProductoService.guardar(this.nuevoTipo).subscribe({
       next: () => {
-        this.verModal = false;
         this.mostrarMensaje('Clasificación registrada con éxito');
-        this.nuevoTipo = { tipoProductoID: 0, nombre: '', activo: true };
+        this.cerrarModal(); // 🧼 Usamos el método unificado para cerrar y limpiar limpito
         this.cargarTipos();
       },
       error: (err) => console.error('Error al registrar:', err)
@@ -77,5 +77,12 @@ export class TipoListComponent implements OnInit {
       this.mostrarToast = false;
       this.cdr.detectChanges();
     }, 3000);
+  }
+
+  // 🧼 Método optimizado para cerrar el modal y resetear la entidad de forma segura
+  cerrarModal(): void {
+    this.verModal = false;
+    this.nuevoTipo = { tipoProductoID: 0, nombre: '', activo: true }; // Resetea con la estructura correcta
+    this.cdr.markForCheck();
   }
 }

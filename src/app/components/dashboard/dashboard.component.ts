@@ -5,12 +5,13 @@ import { ProductoService } from '../../services/producto.service';
 import { MarcaService } from '../../services/marca.service';
 import { ProductoDto } from '../../models/producto.model';
 import { VentaService } from '../../services/venta.service';
+import { TableModule } from 'primeng/table';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule,TableModule],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })
@@ -43,7 +44,7 @@ export class DashboardComponent implements OnInit {
   this.productoService.getProductos().subscribe({
     next: (lista) => {
       this.totalProductos = lista.length;
-      this.productosCriticos = lista.filter(p => p.stock <= 5);
+      this.productosCriticos = lista.filter(p => p.stock <= p.stockMinimo);
       this.totalAlertas = this.productosCriticos.length;
       this.cdr.markForCheck();
     },

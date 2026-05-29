@@ -33,116 +33,151 @@
       No se encontraron productos que coincidan con "{{ terminoBusqueda }}".
     </div>
 
-    <div *ngIf="productosFiltrados.length > 0" style="overflow-x: auto;">
-      <table style="width:100%; border-collapse:collapse; text-align:left;">
-        <thead style="background:#f8fafc; color:#64748b; font-size:0.85rem;">
-          <tr style="border-bottom:1px solid #e2e8f0;">
-            <th style="padding:14px; text-align:center;">Tipo</th>
-            <th style="padding:14px; text-align:center;">Producto</th>
-            <th style="padding:14px; text-align:center;">Tamaño</th>
-            <th style="padding:14px; text-align:center;">Precio</th>
-            <th style="padding:14px; text-align:center;">Marca</th>
-            <th style="padding:14px; text-align:center; width: 140px;">Stock</th>
-            <th style="padding:14px; text-align:center; width: 80px;">Editar</th>
+    <div *ngIf="productosFiltrados.length > 0" class="card mt-4">
+      <p-table 
+        [value]="productosFiltrados" 
+        [paginator]="true" 
+        [rows]="5" 
+        [rowsPerPageOptions]="[5, 10, 20,50]"
+        responsiveLayout="scroll"
+        styleClass="p-datatable-striped modern-table"
+        currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} productos"
+        [showCurrentPageReport]="true">
+        
+        <ng-template pTemplate="header">
+          <tr>
+            <th style="text-align: center; padding: 14px; background: #f8fafc; color: #64748b; font-size: 0.85rem; font-weight: 600; border-bottom: 1px solid #e2e8f0;">Tipo</th>
+            <th style="text-align: center; padding: 14px; background: #f8fafc; color: #64748b; font-size: 0.85rem; font-weight: 600; border-bottom: 1px solid #e2e8f0;">Producto</th>
+            <th style="text-align: center; padding: 14px; background: #f8fafc; color: #64748b; font-size: 0.85rem; font-weight: 600; border-bottom: 1px solid #e2e8f0;">Tamaño</th>
+            <th style="text-align: center; padding: 14px; background: #f8fafc; color: #64748b; font-size: 0.85rem; font-weight: 600; border-bottom: 1px solid #e2e8f0;">Precio</th>
+            <th style="text-align: center; padding: 14px; background: #f8fafc; color: #64748b; font-size: 0.85rem; font-weight: 600; border-bottom: 1px solid #e2e8f0;">Marca</th>
+            <th style="text-align: center; padding: 14px; background: #f8fafc; color: #64748b; font-size: 0.85rem; font-weight: 600; border-bottom: 1px solid #e2e8f0; width: 140px;">Stock</th>
+            <th style="text-align: center; padding: 14px; background: #f8fafc; color: #64748b; font-size: 0.85rem; font-weight: 600; border-bottom: 1px solid #e2e8f0; width: 80px;">Editar</th>
           </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let p of productosFiltrados" style="border-bottom:1px solid #f1f5f9; transition: background 0.15s;">
-            <td style="padding:14px; text-align:center; color:#475569;">{{p.tipoProducto|| '—'}}</td>
-            <td style="padding:14px; text-align:center;"><div style="font-weight:600; color:#334155;">{{p.nombre}}</div></td>
-            <td style="padding:14px; text-align:center; color:#64748b; font-weight: 500;">
+        </ng-template>
+
+        <ng-template pTemplate="body" let-p>
+          <tr style="border-bottom: 1px solid #f1f5f9;">
+            <td style="text-align: center; padding: 14px; color: #475569;">
+              {{ p.tipoProducto || '—' }}
+            </td>
+            <td style="text-align: center; padding: 14px;">
+              <div style="font-weight: 600; color: #334155;">{{ p.nombre }}</div>
+            </td>
+            <td style="text-align: center; padding: 14px; color: #64748b; font-weight: 500;">
               {{ p.unidadMedida ? p.unidadMedida + ' | ' + p.abreviatura : '—' }}
             </td>
-            <td style="padding:14px; text-align:center; font-weight:700; color:#0f172a;">S/ {{p.precio | number:'1.2-2'}}</td>
-            <td style="padding:14px; text-align:center; color:#475569;">{{p.nombreMarca || '—'}}</td>
-            <td style="padding:14px; text-align:center;">
-              <span *ngIf="p.stock === 0" class="local-badge agotado">🚨 Agotado</span>
-              <span *ngIf="p.stock > 0 && p.stock <= p.stockMinimo" class="local-badge urgente">⚠️ Urgente ({{p.stock}})</span>
-              <span *ngIf="p.stock > p.stockMinimo" class="local-badge ok">✅ Stock ({{p.stock}})</span>
+            <td style="text-align: center; padding: 14px; font-weight: 700; color: #0f172a;">
+              S/ {{ p.precio | number:'1.2-2' }}
             </td>
-            <td style="padding:14px; text-align:center;">
-              <button type="button" (click)="editarProducto(p.productoID)" title="Editar producto" class="action-edit-btn">
+            <td style="text-align: center; padding: 14px; color: #475569;">
+              {{ p.nombreMarca || '—' }}
+            </td>
+            <td style="text-align: center; padding: 14px;">
+              <span *ngIf="p.stock === 0" class="local-badge agotado">🚨 Agotado</span>
+              <span *ngIf="p.stock > 0 && p.stock <= p.stockMinimo" class="local-badge urgente">⚠️ Urgente ({{ p.stock }})</span>
+              <span *ngIf="p.stock > p.stockMinimo" class="local-badge ok">✅ Stock ({{ p.stock }})</span>
+            </td>
+            <td style="text-align: center; padding: 14px;">
+              <button 
+                type="button" 
+                (click)="editarProducto(p.productoID)" 
+                title="Editar producto" 
+                class="action-edit-btn"
+                style="background: none; border: none; cursor: pointer; font-size: 1.1rem; transition: transform 0.1s;"
+                onmouseover="this.style.transform='scale(1.15)'"
+                onmouseout="this.style.transform='scale(1)'">
                 ✏️
               </button>
             </td>
           </tr>
-        </tbody>
-      </table>
+        </ng-template>
+
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="7" style="text-align: center; padding: 30px; color: #64748b;">
+              No se encontraron productos que coincidan con la búsqueda.
+            </td>
+          </tr>
+        </ng-template>
+
+      </p-table>
     </div>
   </div>
 
   <div *ngIf="verModal" class="modal-overlay">
-    <div class="modal-card">
-      <h3 style="margin-top:0; color: #1e293b; margin-bottom: 5px; font-size: 1.3rem; font-weight: 700;">
-        {{ nuevoProducto.productoID > 0 ? 'Actualizar Producto' : 'Nuevo Producto' }}
-      </h3>
-      <p style="color: #64748b; font-size: 0.85rem; margin: 0 0 25px 0;">
-        {{ nuevoProducto.productoID > 0 ? 'Modifica el costo y stock actual del artículo.' : 'Completa la ficha técnica y relaciones del artículo.' }}
-      </p>
+  <div class="modal-card">
+    
+    <h3 style="margin-top:0; color: #1e293b; margin-bottom: 5px; font-size: 1.3rem; font-weight: 700;">
+      {{ esEdicion ? 'Actualizar Producto' : 'Nuevo Producto' }}
+    </h3>
+    <p style="color: #64748b; font-size: 0.85rem; margin: 0 0 25px 0;">
+      {{ esEdicion ? 'Modifica el costo y stock actual del artículo.' : 'Completa la ficha técnica y relaciones del artículo.' }}
+    </p>
+    
+    <form (ngSubmit)="registrarProducto()">
       
-      <form (ngSubmit)="registrarProducto()">
+      <div class="custom-field-group" style="margin-bottom: 24px;">
+        <input type="text" id="nombre" name="nombreProd" [(ngModel)]="nuevoProducto.nombre" [disabled]="esEdicion" required placeholder=" " class="premium-input">
+        <label for="nombre" class="custom-label">Nombre del Producto *</label>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 24px;">
+        <div class="custom-field-group">
+          <input type="number" step="0.01" id="precio" name="precioProd" [(ngModel)]="nuevoProducto.precio" required placeholder=" " class="premium-input">
+          <label for="precio" class="custom-label">Precio (S/) *</label>
+        </div>
         
-        <div class="custom-field-group" style="margin-bottom: 24px;">
-          <input type="text" id="nombre" name="nombreProd" [(ngModel)]="nuevoProducto.nombre" [disabled]="nuevoProducto.productoID > 0" required placeholder=" " class="premium-input">
-          <label for="nombre" class="custom-label">Nombre del Producto *</label>
+        <div class="custom-field-group">
+          <input type="number" id="stock" name="stockProd" [(ngModel)]="nuevoProducto.stock" required placeholder=" " class="premium-input">
+          <label for="stock" class="custom-label">Stock Actual *</label>
+        </div>
+        
+        <div class="custom-field-group">
+          <input type="number" id="minimo" name="minProd" [(ngModel)]="nuevoProducto.stockMinimo" [disabled]="esEdicion" required placeholder=" " class="premium-input">
+          <label for="minimo" class="custom-label">Min. Alerta *</label>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 20px; margin-bottom: 30px;">
+        
+        <div class="custom-field-group">
+          <select id="marca" name="marcaProd" [(ngModel)]="nuevoProducto.marcaID" [disabled]="esEdicion" required class="premium-select" [class.has-value]="nuevoProducto.marcaID !== undefined">
+            <option [ngValue]="undefined" style="display: none;"></option>
+            <option *ngFor="let m of listaMarcas" [ngValue]="m.marcaID">{{m.nombre}}</option>
+          </select>
+          <label for="marca" class="custom-label">Marca Comercial</label>
+          <div class="select-arrow" *ngIf="!esEdicion">▼</div>
         </div>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 24px;">
-          <div class="custom-field-group">
-            <input type="number" step="0.01" id="precio" name="precioProd" [(ngModel)]="nuevoProducto.precio" required placeholder=" " class="premium-input">
-            <label for="precio" class="custom-label">Precio (S/) *</label>
-          </div>
-          
-          <div class="custom-field-group">
-            <input type="number" id="stock" name="stockProd" [(ngModel)]="nuevoProducto.stock" required placeholder=" " class="premium-input">
-            <label for="stock" class="custom-label">Stock Actual *</label>
-          </div>
-          
-          <div class="custom-field-group">
-            <input type="number" id="minimo" name="minProd" [(ngModel)]="nuevoProducto.stockMinimo" [disabled]="nuevoProducto.productoID > 0" required placeholder=" " class="premium-input">
-            <label for="minimo" class="custom-label">Min. Alerta *</label>
-          </div>
+        <div class="custom-field-group">
+          <select id="categoria" name="tipoProd" [(ngModel)]="nuevoProducto.tipoProductoID" [disabled]="esEdicion" required class="premium-select" [class.has-value]="nuevoProducto.tipoProductoID !== undefined">
+            <option [ngValue]="undefined" style="display: none;"></option>
+            <option *ngFor="let t of listaTipos" [ngValue]="t.tipoProductoID">{{t.nombre}}</option>
+          </select>
+          <label for="categoria" class="custom-label">Categoría</label>
+          <div class="select-arrow" *ngIf="!esEdicion">▼</div>
         </div>
 
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 20px; margin-bottom: 30px;">
-          
-          <div class="custom-field-group">
-            <select id="marca" name="marcaProd" [(ngModel)]="nuevoProducto.marcaID" [disabled]="nuevoProducto.productoID > 0" required class="premium-select" [class.has-value]="nuevoProducto.marcaID !== undefined">
-              <option [ngValue]="undefined" style="display: none;"></option>
-              <option *ngFor="let m of listaMarcas" [ngValue]="m.marcaID">{{m.nombre}}</option>
-            </select>
-            <label for="marca" class="custom-label">Marca Comercial</label>
-            <div class="select-arrow" *ngIf="nuevoProducto.productoID === 0">▼</div>
-          </div>
-
-          <div class="custom-field-group">
-            <select id="categoria" name="tipoProd" [(ngModel)]="nuevoProducto.tipoProductoID" [disabled]="nuevoProducto.productoID > 0" required class="premium-select" [class.has-value]="nuevoProducto.tipoProductoID !== undefined">
-              <option [ngValue]="undefined" style="display: none;"></option>
-              <option *ngFor="let t of listaTipos" [ngValue]="t.tipoProductoID">{{t.nombre}}</option>
-            </select>
-            <label for="categoria" class="custom-label">Categoría</label>
-            <div class="select-arrow" *ngIf="nuevoProducto.productoID === 0">▼</div>
-          </div>
-
-          <div class="custom-field-group">
-            <select id="tamano" name="unidadProd" [(ngModel)]="nuevoProducto.unidadMedidaID" [disabled]="nuevoProducto.productoID > 0" required class="premium-select" [class.has-value]="nuevoProducto.unidadMedidaID !== undefined">
-              <option [ngValue]="undefined" style="display: none;"></option>
-              <option *ngFor="let u of listaUnidades" [ngValue]="u.unidadMedidaID">{{u.nombre}} ({{u.abreviatura}})</option>
-            </select>
-            <label for="tamano" class="custom-label">Tamaño Métrico</label>
-            <div class="select-arrow" *ngIf="nuevoProducto.productoID === 0">▼</div>
-          </div>
-
+        <div class="custom-field-group">
+          <select id="tamano" name="unidadProd" [(ngModel)]="nuevoProducto.unidadMedidaID" [disabled]="esEdicion" required class="premium-select" [class.has-value]="nuevoProducto.unidadMedidaID !== undefined">
+            <option [ngValue]="undefined" style="display: none;"></option>
+            <option *ngFor="let u of listaUnidades" [ngValue]="u.unidadMedidaID">{{u.nombre}} ({{u.abreviatura}})</option>
+          </select>
+          <label for="tamano" class="custom-label">Tamaño Métrico</label>
+          <div class="select-arrow" *ngIf="!esEdicion">▼</div>
         </div>
 
-        <div style="display: flex; gap: 12px; justify-content: flex-end; border-top: 1px solid #e2e8f0; padding-top: 20px;">
-          <button type="button" (click)="verModal = false" class="saas-btn-secondary">Cancelar</button>
-          <button type="submit" class="saas-btn-primary">📦 Guardar Producto</button>
-        </div>
-      </form>
+      </div>
 
-    </div>
+      <div style="display: flex; gap: 12px; justify-content: flex-end; border-top: 1px solid #e2e8f0; padding-top: 20px;">
+        <button type="button" (click)="cerrarModal()" class="saas-btn-secondary">Cancelar</button>
+        <button type="submit" class="saas-btn-primary">📦 Guardar Producto</button>
+      </div>
+    </form>
+
   </div>
+</div>
 
   <div *ngIf="mostrarToast" class="saas-toast">
     <span style="font-size: 1.2rem;">✅</span>
