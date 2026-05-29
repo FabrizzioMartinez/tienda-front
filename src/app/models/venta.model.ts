@@ -41,6 +41,7 @@ export interface VentaDto {
   ventaID: number;
   clienteID: number;
   cliente?: ClienteDto; 
+  nombreCliente:string;
   tipoComprobante: string;
   numeroComprobante: string;
   total: number;

@@ -27,18 +27,7 @@
             <input pInputText class="w-full" [(ngModel)]="nuevaVenta.clienteNombre" />
           </div>
 
-          <div class="col-12 md:col-3">
-            <label>Tipo Comprobante</label>
-            <p-select
-              class="w-full"
-              [options]="tiposComprobante"
-              [(ngModel)]="nuevaVenta.tipoComprobante"
-              optionLabel="label"
-              optionValue="value">
-            </p-select>
-          </div>
-
-          <div class="col-12 md:col-2">
+          <div class="col-12 md:col-4">
             <label>Tipo Documento</label>
             <p-select
               class="w-full"
@@ -47,12 +36,23 @@
               optionLabel="label"
               optionValue="value">
             </p-select>
-          </div>
-
-          <div class="col-12 md:col-3">
+          </div> 
+          
+          <div class="col-12 md:col-4">
             <label>Número Documento</label>
             <input pInputText class="w-full" [(ngModel)]="nuevaVenta.numeroComprobante" />
           </div>
+
+          <div class="col-12 md:col-4">
+            <label>Tipo Comprobante</label>
+            <p-select
+              class="w-full"
+              [options]="tiposComprobante"
+              [(ngModel)]="nuevaVenta.tipoComprobante"
+              optionLabel="label"
+              optionValue="value">
+            </p-select>
+          </div> 
 
           <div class="col-12 mt-3">
             <div class="grid">

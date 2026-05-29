@@ -39,7 +39,8 @@
         [paginator]="true" 
         [rows]="5" 
         [rowsPerPageOptions]="[5, 10, 20]"
-        responsiveLayout="scroll"
+        responsiveLayout="stack"
+        [breakpoint]="'768px'"
         styleClass="p-datatable-striped modern-table"
         currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} familias"
         [showCurrentPageReport]="true">
@@ -52,15 +53,24 @@
         </ng-template>
 
         <ng-template pTemplate="body" let-t>
-          <tr style="border-bottom: 1px solid #f1f5f9;">
-            <td style="padding: 14px; font-weight: 600; color: #334155; font-size: 0.95rem;">
-              ⚡ {{ t.nombre }}
+          <tr style="border-bottom: 1px solid #f1f5f9; background: white;">
+            
+            <td style="padding: 14px; text-align: left; vertical-align: middle;">
+              <span class="p-column-title block md:hidden" style="font-weight: 600; color: #64748b; font-size: 0.85rem; margin-bottom: 4px;">Descripción de Familia</span>
+              <div style="font-weight: 600; color: #334155; font-size: 0.95rem; word-break: break-word;">
+                ⚡ {{ t.nombre }}
+              </div>
             </td>
-            <td style="text-align: center; padding: 14px;">
-              <span class="local-badge" [ngClass]="t.activo ? 'vigente' : 'inactivo'">
-                {{ t.activo ? 'Vigente' : 'Inactivo' }}
-              </span>
+
+            <td style="text-align: center; padding: 14px; vertical-align: middle;">
+              <span class="p-column-title block md:hidden" style="font-weight: 600; color: #64748b; font-size: 0.85rem; margin-bottom: 4px;">Estado</span>
+              <div style="display: inline-flex; flex-shrink: 0;">
+                <span class="local-badge" [ngClass]="t.activo ? 'vigente' : 'inactivo'">
+                  {{ t.activo ? 'Vigente' : 'Inactivo' }}
+                </span>
+              </div>
             </td>
+
           </tr>
         </ng-template>
 

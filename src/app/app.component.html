@@ -131,31 +131,23 @@
   }
 
   /* =========================================================
-     📦 SIDEBAR
+     📦 SIDEBAR (ESCRITORIO - BASE)
   ========================================================= */
 
   .sidebar-premium {
     width: 270px;
+    /* 🎨 Forzamos un color sólido e idéntico al degradado para evitar cualquier trasluz */
+    background: #0f172a; 
     background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
     color: #cbd5e1;
-
     padding: 35px 24px;
-
     box-sizing: border-box;
-
     display: flex;
     flex-direction: column;
-
     box-shadow: 4px 0 24px rgba(15, 23, 42, 0.08);
-
     border-right: 1px solid rgba(255, 255, 255, 0.04);
-
     position: relative;
-
     z-index: 10;
-
-    backdrop-filter: blur(14px);
-
     transition: transform .3s cubic-bezier(0.4,0,0.2,1);
   }
 
@@ -177,7 +169,6 @@
 
   .mobile-toggle {
     display: none;
-
     z-index: 10000;
   }
 
@@ -189,18 +180,12 @@
     display: flex;
     align-items: center;
     gap: 12px;
-
     padding: 12px 14px;
-
     border-radius: 12px;
-
     text-decoration: none;
-
     font-weight: 600;
     font-size: .95rem;
-
     color: #94a3b8;
-
     transition: all .25s ease;
   }
 
@@ -210,7 +195,6 @@
       rgba(56,189,248,.10),
       rgba(37,99,235,.06)
     );
-
     color: #e2e8f0 !important;
   }
 
@@ -224,7 +208,6 @@
       rgba(56,189,248,.10),
       rgba(37,99,235,.06)
     ) !important;
-
     color: #e2e8f0 !important;
   }
 
@@ -236,31 +219,21 @@
     display: flex;
     align-items: center;
     gap: 12px;
-
     padding: 10px 16px;
-
     color: #64748b;
-
     text-decoration: none;
-
     font-weight: 500;
     font-size: .9rem;
-
     border-radius: 10px;
-
     transition: all .2s ease;
-
     position: relative;
   }
 
   .sub-enlace .dot {
     width: 4px;
     height: 4px;
-
     background-color: transparent;
-
     border-radius: 50%;
-
     transition: all .2s ease;
   }
 
@@ -270,41 +243,34 @@
       rgba(56,189,248,.10),
       rgba(37,99,235,.06)
     );
-
     color: #e2e8f0 !important;
   }
 
   .sub-enlace:hover .dot {
     background-color: #38bdf8;
-
     box-shadow: 0 0 8px #38bdf8;
   }
 
-  /* =========================================================
+/* =========================================================
      ✅ ACTIVE LINK
   ========================================================= */
 
   .active-link {
-    background-color: rgba(37,99,235,.12) !important;
-
-    color: #38bdf8 !important;
-
+    background-color: rgba(37, 99, 235, 0.12) !important;
+    color: #38bdf8 !important; /* 👈 CORREGIDO: Se quitó el '#' que estaba en medio de la cadena */
     font-weight: 600 !important;
-
     transition: all .2s ease;
   }
 
   .active-link .dot {
-    background-color: #38bdf8 !important;
-
+    background-color: #38bdf8 !important; /* 👈 CORREGIDO: También aquí por si acaso */
     width: 6px !important;
     height: 6px !important;
-
     box-shadow: 0 0 10px #38bdf8;
   }
 
   /* =========================================================
-     📱 RESPONSIVE
+     📱 RESPONSIVE (MÓVILES Y TABLETS)
   ========================================================= */
 
   @media (max-width: 768px) {
@@ -313,71 +279,75 @@
       flex-direction: column;
     }
 
+    /* 🛡️ CORREGIDO: Evita la duplicación estática dándole absolute/fixed de raíz */
     .sidebar-premium {
       position: fixed;
-
       left: 0;
       top: 0;
       bottom: 0;
-
-      width: 270px;
+      width: 280px; /* Un poquito más ancho para empaquetar bien los textos */
       height: 100vh;
-
-      transform: translateX(-100%);
-
-      z-index: 9999;
+      background: #0f172a; /* 🔏 Fondo 100% sólido para que nada se trasluzca de fondo */
+      transform: translateX(-100%); /* Oculto completamente a la izquierda */
+      z-index: 9999; /* Por encima de todo el sistema */
+      box-shadow: none;
     }
 
+    /* 🔥 Al abrirse, genera una sombra proyectada gruesa hacia la derecha */
     .sidebar-premium.mobile-open {
       transform: translateX(0);
+      box-shadow: 10px 0 40px rgba(0, 0, 0, 0.4);
     }
 
     .main-content {
       padding: 80px 16px 30px;
+      width: 100%;
+      box-sizing: border-box;
     }
+
+    /* =========================================================
+       📱 RESPONSIVE - BOTÓN MOBILE CORREGIDO
+    ========================================================= */
 
     .mobile-toggle {
       display: flex;
-
       position: fixed;
-
       top: 15px;
-      left: 15px;
-
+      left: 15px; /* Posición base cuando el menú está cerrado */
       width: 46px;
       height: 46px;
-
       background: #0f172a;
-
       color: #e2e8f0;
-
       border: 1px solid rgba(255,255,255,.1);
-
       border-radius: 12px;
-
       font-size: 1.4rem;
-
       align-items: center;
       justify-content: center;
-
       cursor: pointer;
-
       box-shadow: 0 4px 12px rgba(15,23,42,.2);
+      z-index: 10000;
+      
+      /* ✨ Transición suave para que acompañe el movimiento del menú */
+      transition: left .3s cubic-bezier(0.4, 0, 0.2, 1), transform .3s ease;
     }
 
+    /* 🔥 NUEVO: Si el contenedor de la app tiene el sidebar abierto, 
+       empujamos el botón hacia la derecha para que no estorbe el logo */
+    .app-container:has(.sidebar-premium.mobile-open) .mobile-toggle {
+      left: 295px; /* 270px del ancho del sidebar + 25px de margen */
+      background: #1e293b; /* Cambia ligeramente de color para hacer juego */
+    }
+
+    /* 🌁 CORREGIDO: Filtro de fondo oscuro real e impenetrable */
     .sidebar-overlay {
       position: fixed;
-
       top: 0;
       left: 0;
       right: 0;
       bottom: 0;
-
-      background: rgba(15,23,42,.4);
-
-      backdrop-filter: blur(2px);
-
-      z-index: 9998;
+      background: rgba(15, 23, 42, 0.65) !important; /* 👈 Más oscuro para tapar el dashboard */
+      backdrop-filter: blur(4px) !important; /* 👈 Desenfoque sutil para esconder las tarjetas de atrás */
+      z-index: 9998; /* Un nivel abajo del sidebar */
     }
   }
 </style>

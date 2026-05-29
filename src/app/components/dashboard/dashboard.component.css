@@ -751,3 +751,80 @@
 ::ng-deep .p-dialog table {
   border-color: #e2e8f0 !important;
 }
+
+
+/* =========================================================
+   👑 CONTROL TOTAL DE TIPOGRAFÍA EN COMPONENTES PRIMENG
+============================================================ */
+
+/* Aplicar fuente heredada a toda la estructura del diálogo */
+::ng-deep .premium-pop-dialog,
+::ng-deep .premium-pop-dialog .p-dialog-header,
+::ng-deep .premium-pop-dialog .p-dialog-content {
+  font-family: inherit !important;
+}
+
+/* Forzar fuente en el input y los números del p-datepicker */
+::ng-deep .high-premium-calendar,
+::ng-deep .high-premium-calendar .p-datepicker-input,
+::ng-deep .p-datepicker-panel,
+::ng-deep .p-datepicker-header,
+::ng-deep .p-datepicker-calendar th,
+::ng-deep .p-datepicker-calendar td {
+  font-family: inherit !important;
+}
+
+/* Forzar fuente en la caja principal del p-select */
+::ng-deep .premium-select-box,
+::ng-deep .premium-select-box .p-select-label,
+::ng-deep .premium-select-box .p-select-placeholder {
+  font-family: inherit !important;
+}
+
+/* Forzar fuente en el panel flotante de opciones (dropdown e input buscador) */
+::ng-deep .p-select-overlay,
+::ng-deep .p-select-overlay .p-select-option,
+::ng-deep .p-select-overlay .p-select-filter,
+::ng-deep .p-select-overlay .p-select-empty-message {
+  font-family: inherit !important;
+}
+
+
+/* Badges de Estado de Pago */
+.badge-pago {
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  display: inline-block;
+}
+.badge-pago.green { background: #dcfce7; color: #15803d; }
+.badge-pago.blue { background: #dbeafe; color: #1d4ed8; }
+.badge-pago.red { background: #fee2e2; color: #b91c1c; }
+
+/* Control de fuentes profundo para la Tabla de PrimeNG */
+::ng-deep .premium-nested-table,
+::ng-deep .premium-nested-table .p-datatable-thead > tr > th,
+::ng-deep .premium-nested-table .p-datatable-tbody > tr > td {
+  font-family: inherit !important;
+}
+
+::ng-deep .premium-nested-table .p-datatable-thead > tr > th {
+  background: #f1f5f9 !important;
+  color: #334155 !important;
+  padding: 10px 12px !important;
+  font-size: 0.85rem !important;
+}
+
+::ng-deep .premium-nested-table .p-datatable-tbody > tr > td {
+  padding: 10px 12px !important;
+  font-size: 0.85rem !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+}
+
+/* Paginador */
+::ng-deep .premium-nested-table .p-paginator {
+  font-family: inherit !important;
+  font-size: 0.8rem !important;
+  padding: 6px !important;
+}

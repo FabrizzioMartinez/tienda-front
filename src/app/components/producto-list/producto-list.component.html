@@ -38,8 +38,9 @@
         [value]="productosFiltrados" 
         [paginator]="true" 
         [rows]="5" 
-        [rowsPerPageOptions]="[5, 10, 20,50]"
-        responsiveLayout="scroll"
+        [rowsPerPageOptions]="[5, 10, 20, 50]"
+        responsiveLayout="stack"
+        [breakpoint]="'768px'"
         styleClass="p-datatable-striped modern-table"
         currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} productos"
         [showCurrentPageReport]="true">
@@ -52,44 +53,71 @@
             <th style="text-align: center; padding: 14px; background: #f8fafc; color: #64748b; font-size: 0.85rem; font-weight: 600; border-bottom: 1px solid #e2e8f0;">Precio</th>
             <th style="text-align: center; padding: 14px; background: #f8fafc; color: #64748b; font-size: 0.85rem; font-weight: 600; border-bottom: 1px solid #e2e8f0;">Marca</th>
             <th style="text-align: center; padding: 14px; background: #f8fafc; color: #64748b; font-size: 0.85rem; font-weight: 600; border-bottom: 1px solid #e2e8f0; width: 140px;">Stock</th>
-            <th style="text-align: center; padding: 14px; background: #f8fafc; color: #64748b; font-size: 0.85rem; font-weight: 600; border-bottom: 1px solid #e2e8f0; width: 80px;">Editar</th>
+            <th style="text-align: center; padding: 14px; background: #f8fafc; color: #64748b; font-weight: 600; border-bottom: 1px solid #e2e8f0; width: 80px;">Editar</th>
           </tr>
         </ng-template>
 
         <ng-template pTemplate="body" let-p>
-          <tr style="border-bottom: 1px solid #f1f5f9;">
-            <td style="text-align: center; padding: 14px; color: #475569;">
-              {{ p.tipoProducto || '—' }}
+          <tr style="border-bottom: 1px solid #f1f5f9; background: white;">
+            
+            <td style="padding: 14px; vertical-align: middle;">
+              <span class="p-column-title block md:hidden" style="font-weight: 600; color: #64748b; font-size: 0.85rem; margin-bottom: 4px;">Tipo</span>
+              <div style="color: #475569;">
+                {{ p.tipoProducto || '—' }}
+              </div>
             </td>
-            <td style="text-align: center; padding: 14px;">
-              <div style="font-weight: 600; color: #334155;">{{ p.nombre }}</div>
+
+            <td style="padding: 14px; vertical-align: middle;">
+              <span class="p-column-title block md:hidden" style="font-weight: 600; color: #64748b; font-size: 0.85rem; margin-bottom: 4px;">Producto</span>
+              <div style="font-weight: 600; color: #334155; word-break: break-word;">
+                {{ p.nombre }}
+              </div>
             </td>
-            <td style="text-align: center; padding: 14px; color: #64748b; font-weight: 500;">
-              {{ p.unidadMedida ? p.unidadMedida + ' | ' + p.abreviatura : '—' }}
+
+            <td style="padding: 14px; vertical-align: middle;">
+              <span class="p-column-title block md:hidden" style="font-weight: 600; color: #64748b; font-size: 0.85rem; margin-bottom: 4px;">Tamaño</span>
+              <div style="color: #64748b; font-weight: 500;">
+                {{ p.unidadMedida ? p.unidadMedida + ' | ' + p.abreviatura : '—' }}
+              </div>
             </td>
-            <td style="text-align: center; padding: 14px; font-weight: 700; color: #0f172a;">
-              S/ {{ p.precio | number:'1.2-2' }}
+
+            <td style="padding: 14px; vertical-align: middle;">
+              <span class="p-column-title block md:hidden" style="font-weight: 600; color: #64748b; font-size: 0.85rem; margin-bottom: 4px;">Precio</span>
+              <div style="font-weight: 700; color: #0f172a;">
+                S/ {{ p.precio | number:'1.2-2' }}
+              </div>
             </td>
-            <td style="text-align: center; padding: 14px; color: #475569;">
-              {{ p.nombreMarca || '—' }}
+
+            <td style="padding: 14px; vertical-align: middle;">
+              <span class="p-column-title block md:hidden" style="font-weight: 600; color: #64748b; font-size: 0.85rem; margin-bottom: 4px;">Marca</span>
+              <div style="color: #475569;">
+                {{ p.nombreMarca || '—' }}
+              </div>
             </td>
-            <td style="text-align: center; padding: 14px;">
-              <span *ngIf="p.stock === 0" class="local-badge agotado">🚨 Agotado</span>
-              <span *ngIf="p.stock > 0 && p.stock <= p.stockMinimo" class="local-badge urgente">⚠️ Urgente ({{ p.stock }})</span>
-              <span *ngIf="p.stock > p.stockMinimo" class="local-badge ok">✅ Stock ({{ p.stock }})</span>
+
+            <td style="padding: 14px; vertical-align: middle;">
+              <span class="p-column-title block md:hidden" style="font-weight: 600; color: #64748b; font-size: 0.85rem; margin-bottom: 4px;">Stock</span>
+              <div style="display: inline-flex; flex-shrink: 0;">
+                <span *ngIf="p.stock === 0" class="local-badge agotado">🚨 Agotado</span>
+                <span *ngIf="p.stock > 0 && p.stock <= p.stockMinimo" class="local-badge urgente">⚠️ Urgente ({{ p.stock }})</span>
+                <span *ngIf="p.stock > p.stockMinimo" class="local-badge ok">✅ Stock ({{ p.stock }})</span>
+              </div>
             </td>
-            <td style="text-align: center; padding: 14px;">
+
+            <td style="padding: 14px; vertical-align: middle;">
+              <span class="p-column-title block md:hidden" style="font-weight: 600; color: #64748b; font-size: 0.85rem; margin-bottom: 4px;">Editar</span>
               <button 
                 type="button" 
                 (click)="editarProducto(p.productoID)" 
                 title="Editar producto" 
                 class="action-edit-btn"
-                style="background: none; border: none; cursor: pointer; font-size: 1.1rem; transition: transform 0.1s;"
+                style="background: none; border: none; cursor: pointer; font-size: 1.1rem; transition: transform 0.1s; display: inline-flex; align-items: center; justify-content: center; padding: 4px 8px;"
                 onmouseover="this.style.transform='scale(1.15)'"
                 onmouseout="this.style.transform='scale(1)'">
                 ✏️
               </button>
             </td>
+
           </tr>
         </ng-template>
 
