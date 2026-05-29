@@ -167,7 +167,7 @@
     </div>
 
     <!-- TABLE -->
-    <div *ngIf="productosCriticos.length > 0" class="card mt-2">
+    <div *ngIf="productosCriticos.length > 0" class="card mt-2 shadow-sm" style="border-radius: 8px; overflow: hidden;">
   <p-table 
     [value]="productosCriticos" 
     [paginator]="true" 
@@ -175,41 +175,58 @@
     [rowsPerPageOptions]="[5, 10]"
     responsiveLayout="scroll"
     styleClass="p-datatable-striped modern-table"
-    currentPageReportTemplate="{first}-{last} de {totalRecords}"
+    currentPageReportTemplate="Mostrando {first}-{last} de {totalRecords}"
     [showCurrentPageReport]="true">
     
     <ng-template pTemplate="header">
       <tr>
-        <th style="text-align: center; padding: 12px; background: #f8fafc; color: #64748b; font-size: 0.85rem; font-weight: 600; border-bottom: 1px solid #e2e8f0;">Producto</th>
-        <th style="text-align: center; padding: 12px; background: #f8fafc; color: #64748b; font-size: 0.85rem; font-weight: 600; border-bottom: 1px solid #e2e8f0; width: 140px;">Estado</th>
+        <th style="text-align: center; padding: 14px 20px; background: #f8fafc; color: #64748b; font-size: 0.85rem; font-weight: 600; border-bottom: 1px solid #e2e8f0;">
+          Producto
+        </th>
+        <th style="text-align: center; padding: 14px; background: #f8fafc; color: #64748b; font-size: 0.85rem; font-weight: 600; border-bottom: 1px solid #e2e8f0; width: 120px;">
+          Precio
+        </th>
       </tr>
     </ng-template>
 
     <ng-template pTemplate="body" let-p>
-      <tr style="border-bottom: 1px solid #f1f5f9;">
+      <tr style="border-bottom: 1px solid #f1f5f9; background: white;">
         
-        <td style="text-align: center; padding: 12px;">
-          <div class="product-name" style="font-weight: 600; color: #334155;">
-            {{ p.nombre }}{{ p.abreviatura ? ' - ' + p.abreviatura : '' }}
+        <td style="text-align: left; padding: 14px 20px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; gap: 16px; font-weight: 600; color: #1e293b; font-size: 0.95rem;">
+        
+        <span>
+          {{ p.nombre }}{{ p.abreviatura ? ' - ' + p.abreviatura : '' }}
+        </span>
+
+        <div style="flex-shrink: 0;">
+          <span *ngIf="p.stock === 0" class="local-badge agotado" style="display: inline-flex; align-items: center; justify-content: center; min-width: 110px; padding: 4px 8px;">
+            🚨 Agotado
+          </span>
+          
+          <span *ngIf="p.stock > 0" class="local-badge urgente" style="display: inline-flex; align-items: center; justify-content: center; min-width: 110px; padding: 4px 8px;">
+            ⚠️ Urgente ({{ p.stock }})
+          </span>
+        </div>
+
+      </div>
+    </td>
+
+        <td style="text-align: center; padding: 14px;">
+          <div style="font-weight: 600; color: #0f172a; font-size: 0.95rem;">
+            S/ {{ p.precio | number:'1.2-2' }}
           </div>
         </td>
 
-        <td style="text-align: center; padding: 12px;">
-          <span *ngIf="p.stock === 0" class="local-badge agotado">
-            🚨 Agotado
-          </span>
-          <span *ngIf="p.stock > 0" class="local-badge urgente">
-            ⚠️ Urgente ({{ p.stock }})
-          </span>
-        </td>
+        
 
       </tr>
     </ng-template>
 
     <ng-template pTemplate="emptymessage">
       <tr>
-        <td colspan="2" style="text-align: center; padding: 20px; color: #64748b;">
-          No hay productos críticos detectados.
+        <td colspan="4" style="text-align: center; padding: 30px; color: #64748b; font-size: 0.9rem;">
+          ✨ No hay productos críticos en este momento.
         </td>
       </tr>
     </ng-template>
