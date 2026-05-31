@@ -50,13 +50,13 @@
 
       <div class="kpi-icon kpi-green" style="flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
         <i class="pi pi-wallet"></i>
-      </div>
-      
+      </div>      
       <div class="kpi-info" style="display: flex; flex-direction: column; justify-content: center; gap: 4px;">
-        <h3 style="display: flex; align-items: center; gap: 6px; margin: 0; padding: 0;">
-          Ventas del Día <i class="pi pi-external-link" style="font-size: 0.75rem; color: #94a3b8;"></i>
-        </h3>
-        <p style="margin: 0; padding: 0; line-height: 1.1;">
+        <h3 style="display: flex; align-items: center; gap: 6px; margin: 0; padding: 0; font-size: 0.85rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em;">
+          Ventas del Día 
+          <i class="pi pi-external-link" style="font-size: 0.75rem; color: #94a3b8; cursor: pointer;"></i>
+        </h3>        
+        <p style="margin: 0; padding: 0; font-size: 1.8rem; font-weight: 800; color: #0f172a; line-height: 1.1; white-space: nowrap;">
           S/ {{ ventasDia | number:'1.2-2' }}
         </p>
       </div>
@@ -120,69 +120,69 @@
       <p-table 
       [value]="productosCriticos" 
       [paginator]="true" 
-      [rows]="5" 
-      [rowsPerPageOptions]="[5, 10]"
+      [rows]="8"       
       responsiveLayout="stack"
-      [breakpoint]="'768px'"
+      breakpoint="768" 
+      dropdownAppendTo="'body'"
       styleClass="p-datatable-striped modern-table"
-      currentPageReportTemplate="Mostrando {first}-{last} de {totalRecords}"
+      currentPageReportTemplate="{first}-{last} de {totalRecords}"
       [showCurrentPageReport]="true">
+  
+  <ng-template pTemplate="header" class="hidden md:table-header-group">
+    <tr>
+      <th style="text-align: left; padding: 14px 20px; background: #f8fafc; color: #64748b; font-size: 0.85rem; font-weight: 600; border-bottom: 1px solid #e2e8f0;">
+        Producto
+      </th>
+      <th style="text-align: center; padding: 14px; background: #f8fafc; color: #64748b; font-size: 0.85rem; font-weight: 600; border-bottom: 1px solid #e2e8f0; width: 140px;">
+        Precio
+      </th>
+      <th style="text-align: center; padding: 14px 20px; background: #f8fafc; color: #64748b; font-size: 0.85rem; font-weight: 600; border-bottom: 1px solid #e2e8f0;">
+        Estado
+      </th>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="body" let-p>
+    <tr style="border-bottom: 1px solid #f1f5f9; background: white;">
       
-      <ng-template pTemplate="header">
-        <tr>
-          <th style="text-align: left; padding: 14px 20px; background: #f8fafc; color: #64748b; font-size: 0.85rem; font-weight: 600; border-bottom: 1px solid #e2e8f0;">
-            Producto
-          </th>
-          <th style="text-align: center; padding: 14px; background: #f8fafc; color: #64748b; font-size: 0.85rem; font-weight: 600; border-bottom: 1px solid #e2e8f0; width: 140px;">
-            Precio
-          </th>
-          <th style="text-align: center; padding: 14px 20px; background: #f8fafc; color: #64748b; font-size: 0.85rem; font-weight: 600; border-bottom: 1px solid #e2e8f0;">
-            Estado
-          </th>
-        </tr>
-      </ng-template>
+      <td style="text-align: left; padding: 14px 20px; vertical-align: middle;">
+        <span class="p-column-title block md:hidden" style="font-weight: 600; color: #64748b; font-size: 0.85rem; margin-bottom: 4px;">Producto</span>
+        <div style="font-weight: 600; color: #1e293b; font-size: 0.95rem; word-break: break-word;">
+          {{ p.nombre }}{{ p.abreviatura ? ' - ' + p.abreviatura : '' }}
+        </div>
+      </td>
 
-      <ng-template pTemplate="body" let-p>
-        <tr style="border-bottom: 1px solid #f1f5f9; background: white;">
-          
-          <td style="text-align: left; padding: 14px 20px;">
-            <span class="p-column-title block md:hidden" style="font-weight: 600; color: #64748b; font-size: 0.85rem; margin-bottom: 4px;">Producto</span>
-            <div style="font-weight: 600; color: #1e293b; font-size: 0.95rem; word-break: break-word;">
-              {{ p.nombre }}{{ p.abreviatura ? ' - ' + p.abreviatura : '' }}
-            </div>
-          </td>
+      <td style="text-align: center; padding: 14px; vertical-align: middle;">
+        <span class="p-column-title block md:hidden" style="font-weight: 600; color: #64748b; font-size: 0.85rem; margin-bottom: 4px;">Precio</span>
+        <div style="font-weight: 600; color: #0f172a; font-size: 0.95rem;">
+          S/ {{ p.precio | number:'1.2-2' }}
+        </div>
+      </td>
 
-          <td style="text-align: center; padding: 14px; vertical-align: middle;">
-            <span class="p-column-title block md:hidden" style="font-weight: 600; color: #64748b; font-size: 0.85rem; margin-bottom: 4px;">Precio</span>
-            <div style="font-weight: 600; color: #0f172a; font-size: 0.95rem;">
-              S/ {{ p.precio | number:'1.2-2' }}
-            </div>
-          </td>
+      <td style="text-align: center; padding: 14px 20px; vertical-align: middle;">
+        <span class="p-column-title block md:hidden" style="font-weight: 600; color: #64748b; font-size: 0.85rem; margin-bottom: 4px;">Estado</span>
+        <div style="display: inline-flex; flex-shrink: 0;">
+          <span *ngIf="p.stock === 0" class="local-badge agotado" style="display: inline-flex; align-items: center; justify-content: center; min-width: 110px; padding: 4px 8px; border-radius: 6px;">
+            🚨 Agotado
+          </span>
+          <span *ngIf="p.stock > 0" class="local-badge urgente" style="display: inline-flex; align-items: center; justify-content: center; min-width: 110px; padding: 4px 8px; border-radius: 6px;">
+            ⚠️ Urgente ({{ p.stock }})
+          </span>
+        </div>
+      </td>
 
-          <td style="text-align: center; padding: 14px; vertical-align: middle;">
-            <span class="p-column-title block md:hidden" style="font-weight: 600; color: #64748b; font-size: 0.85rem; margin-bottom: 4px;">Estado</span>
-            <div style="display: inline-flex; flex-shrink: 0;">
-              <span *ngIf="p.stock === 0" class="local-badge agotado" style="display: inline-flex; align-items: center; justify-content: center; min-width: 110px; padding: 4px 8px; border-radius: 6px;">
-                🚨 Agotado
-              </span>
-              <span *ngIf="p.stock > 0" class="local-badge urgente" style="display: inline-flex; align-items: center; justify-content: center; min-width: 110px; padding: 4px 8px; border-radius: 6px;">
-                ⚠️ Urgente ({{ p.stock }})
-              </span>
-            </div>
-          </td>
+    </tr>
+  </ng-template>
 
-        </tr>
-      </ng-template>
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td colspan="3" style="text-align: center; padding: 30px; color: #64748b; font-size: 0.9rem;">
+        ✨ No hay productos críticos en este momento.
+      </td>
+    </tr>
+  </ng-template>
 
-      <ng-template pTemplate="emptymessage">
-        <tr>
-          <td colspan="3" style="text-align: center; padding: 30px; color: #64748b; font-size: 0.9rem;">
-            ✨ No hay productos críticos en este momento.
-          </td>
-        </tr>
-      </ng-template>
-
-      </p-table>
+</p-table>
     </div>
   </div>
 
@@ -273,11 +273,10 @@
 
       <div style="display: flex; flex: 1 1 auto; justify-content: flex-end; height: 40px;">
         <button type="submit" class="saas-btn-primary" style="background: #0f172a; padding: 0 24px; border-radius: 10px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px; border: none; color: white; cursor: pointer; height: 40px; width: auto; min-width: 130px; white-space: nowrap;">
-          <i class="pi pi-refresh" style="font-size: 0.85rem;"></i>
-          <span>Consultar</span>
+          <i class="pi pi-search" style="font-size: 0.85rem; color: #ffffff !important;"></i>
+          <span style="color: #ffffff !important;">Consultar</span>
         </button>
       </div>
-
     </div>
   </form>
 
@@ -288,11 +287,12 @@
       dataKey="ventaID"
       [expandedRowKeys]="expandedRows"
       responsiveLayout="stack"
-      [breakpoint]="'768px'"
+      breakpoint="768"
       styleClass="p-datatable-sm premium-nested-table"
       [paginator]="true"
       [rows]="5"
       [rowsPerPageOptions]="[5, 10, 20]"
+      dropdownAppendTo="'body'"
       currentPageReportTemplate="{first}-{last} de {totalRecords}"
       [showCurrentPageReport]="true">
 
@@ -415,7 +415,6 @@
 
                   </tr>
                 </ng-template>
-
               </p-table>
 
             </div>

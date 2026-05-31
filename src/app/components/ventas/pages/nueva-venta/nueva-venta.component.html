@@ -75,7 +75,6 @@
       </p-card>
 
       <p-card styleClass="modern-card mt-4">
-
         <div class="card-header">
           <div class="header-icon green-gradient">
             <i class="pi pi-shopping-cart"></i>
@@ -85,43 +84,45 @@
 
         <div class="grid mt-3 align-items-end">
 
-          <div class="col-12 lg:col-7">
-            <label>Buscar producto</label>
+          <div class="col-12 lg:col-6" style="display: flex; flex-direction: column; gap: 6px;">
+            <label style="font-weight: 600; color: #475569; font-size: 0.85rem;">Buscar producto</label>
             <p-autoComplete 
               id="prod" 
-              class="w-full" 
+              styleClass="w-full" 
+              inputStyleClass="w-full"
               [(ngModel)]="productoSeleccionado" 
               [suggestions]="sugerenciasProductos" 
               (completeMethod)="buscarProductos($event)" 
               (onSelect)="onProductoSeleccionado($event)" 
               optionLabel="nombreMostrar" 
               showClear="true"
-              [dropdown]="true" 
+              [dropdown]="true"               
+              style="height: 40px;"
               appendTo="body">
             </p-autoComplete>
           </div>
 
-          <div class="col-12 lg:col-5">
-            <div class="flex gap-2 align-items-end">
+          <div class="col-12 lg:col-3" style="display: flex; flex-direction: column; gap: 6px;">
+            <label style="font-weight: 600; color: #475569; font-size: 0.85rem;">Cantidad</label>
+            <p-inputNumber
+              styleClass="w-full"
+              inputStyleClass="w-full"
+              [(ngModel)]="cantidadSeleccionada"
+              [min]="1"
+              style="height: 40px;">
+            </p-inputNumber>
+          </div>
 
-              <div class="w-full">
-                <label>Cantidad</label>
-                <p-inputNumber
-                  class="w-full"
-                  [(ngModel)]="cantidadSeleccionada"
-                  [min]="1">
-                </p-inputNumber>
-              </div>
-
-              <button 
-                pButton 
-                label="Agregar" 
-                class="p-button-sm" 
-                (click)="agregarAlCarrito()" 
-                [disabled]="!productoSeleccionado || productoSeleccionado.stock === 0">
-              </button>
-
-            </div>
+          <div class="col-12 lg:col-3" style="display: flex; align-items: flex-end; height: 100%;">
+            <button 
+              pButton 
+              type="button"
+              (click)="agregarAlCarrito()" 
+              [disabled]="!productoSeleccionado || productoSeleccionado.stock === 0"
+              style="background: #0f172a; border: none; border-radius: 10px; font-weight: 600; width: 100%; height: 40px; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; margin-bottom: 2px;">
+              <i class="pi pi-plus" style="font-size: 0.85rem; color: #ffffff !important;"></i>
+              <span style="color: #ffffff !important;">Agregar</span>
+            </button>
           </div>
 
         </div>
@@ -138,35 +139,65 @@
 
         <p-table
           [value]="nuevaVenta.detalles"
-          responsiveLayout="scroll"
+          responsiveLayout="stack"
+          [breakpoint]="'768px'"
           styleClass="modern-table mt-3">
 
           <ng-template pTemplate="header">
             <tr>
-              <th style="text-align: center;">Producto</th>
+              <th style="text-align: left; padding-left: 12px;">Producto</th>
               <th style="text-align: center;">Precio</th>
               <th style="text-align: center;">Cantidad</th>
               <th style="text-align: center;">Subtotal</th>
-              <th style="text-align: center;"></th>
+              <th style="text-align: center; width: 60px;"></th>
             </tr>
           </ng-template>
 
           <ng-template pTemplate="body" let-item let-i="rowIndex">
-            <tr>
-              <td>{{ item.nombreProducto }}</td>
-              <td style="text-align: center;">S/ {{ item.precioUnitario | number:'1.2-2' }}</td>
-              <td style="text-align: center;">
-                {{ item.cantidad }}
+            <tr style="background: white;">
+              
+              <td style="text-align: left; vertical-align: middle;">
+                <span class="p-column-title block md:hidden" style="font-weight: 600; color: #64748b; font-size: 0.85rem; margin-bottom: 4px;">Producto</span>
+                <div style="font-weight: 600; color: #334155; word-break: break-word;">
+                  {{ item.nombreProducto }}
+                </div>
               </td>
-              <td style="text-align: center;" >S/ {{ item.subtotal | number:'1.2-2' }}</td>
-              <td>
-                <button
-                  pButton
-                  icon="pi pi-trash"
-                  class="p-button-rounded p-button-danger p-button-text"
-                  (click)="quitarDelCarrito(i)">
-                </button>
+
+              <td style="text-align: center; vertical-align: middle;">
+                <span class="p-column-title block md:hidden" style="font-weight: 600; color: #64748b; font-size: 0.85rem; margin-bottom: 4px;">Precio</span>
+                <div style="color: #475569; font-weight: 500;">
+                  S/ {{ item.precioUnitario | number:'1.2-2' }}
+                </div>
               </td>
+
+              <td style="text-align: center; vertical-align: middle;">
+                <span class="p-column-title block md:hidden" style="font-weight: 600; color: #64748b; font-size: 0.85rem; margin-bottom: 4px;">Cantidad</span>
+                <div style="color: #475569; font-weight: 600;">
+                  {{ item.cantidad }}
+                </div>
+              </td>
+
+              <td style="text-align: center; vertical-align: middle;">
+                <span class="p-column-title block md:hidden" style="font-weight: 600; color: #64748b; font-size: 0.85rem; margin-bottom: 4px;">Subtotal</span>
+                <div style="font-weight: 700; color: #0f172a;">
+                  S/ {{ item.subtotal | number:'1.2-2' }}
+                </div>
+              </td>
+
+              <td style="text-align: center; vertical-align: middle;">
+                <span class="p-column-title block md:hidden" style="font-weight: 600; color: #64748b; font-size: 0.85rem; margin-bottom: 4px;">Quitar</span>
+                <div style="display: inline-flex; align-items: center; justify-content: center;">
+                  <button
+                    pButton
+                    type="button"
+                    icon="pi pi-trash"
+                    class="p-button-rounded p-button-danger p-button-text"
+                    style="width: 32px; height: 32px;"
+                    (click)="quitarDelCarrito(i)">
+                  </button>
+                </div>
+              </td>
+
             </tr>
           </ng-template>
 
