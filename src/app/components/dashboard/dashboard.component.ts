@@ -31,7 +31,6 @@ import { trigger, state, style, transition, animate } from '@angular/animations'
   selector: 'app-dashboard',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-
   imports: [
     CommonModule,
     RouterModule,
@@ -55,28 +54,24 @@ import { trigger, state, style, transition, animate } from '@angular/animations'
         opacity: 1
       })),
       transition('collapsed <=> expanded', [
-        animate('280ms cubic-bezier(0.4, 0, 0.2, 1)') // 👈 Curva de aceleración de Apple/Google
+        animate('280ms cubic-bezier(0.4, 0, 0.2, 1)')
       ])
     ])
   ],
-
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })
-
 export class DashboardComponent implements OnInit {
 
   /* =========================================================
       VIEWCHILD
   ========================================================= */
-
   @ViewChild('btnCancelar', { static: false })
   btnCancelar!: ElementRef<HTMLButtonElement>;
 
   /* =========================================================
       KPIs
   ========================================================= */
-
   totalProductos = 0;
   totalAlertas = 0;
   totalMarcas = 0;
@@ -87,21 +82,17 @@ export class DashboardComponent implements OnInit {
   /* =========================================================
       MODAL REPORTE
   ========================================================= */
-
   verModalReporte = false;
-
   listaVentasFiltradas: VentaDto[] = [];
 
   /* =========================================================
       EXPANSIÓN DE FILAS
   ========================================================= */
-
   expandedRows: any = {};
 
   /* =========================================================
       FILTROS
   ========================================================= */
-
   filtroReporte = {
     fecha: '',
     productoId: null as number | null
@@ -110,7 +101,6 @@ export class DashboardComponent implements OnInit {
   /* =========================================================
       CONSTRUCTOR
   ========================================================= */
-
   constructor(
     private productoService: ProductoService,
     private marcaService: MarcaService,
@@ -122,281 +112,170 @@ export class DashboardComponent implements OnInit {
   /* =========================================================
       INIT
   ========================================================= */
-
   ngOnInit(): void {
-
     this.cargarResumen();
+  }
 
+  /* =========================================================
+      MÉTODOS AYUDANTES PARA FECHA PERÚ (EVITA DESFASES)
+  ========================================================= */
+
+  /**
+   * Obtiene un objeto Date nativo seteado exactamente en la hora de Perú
+   */
+  private getJavaDatePeru(): Date {
+    const stringPeru = new Date().toLocaleString('en-US', { timeZone: 'America/Lima' });
+    return new Date(stringPeru);
+  }
+
+  /**
+   * Retorna la fecha de Perú formateada directamente en "YYYY-MM-DD"
+   */
+  private getFechaStringPeru(): string {
+    const opciones = { timeZone: 'America/Lima', year: 'numeric', month: '2-digit', day: '2-digit' } as const;
+    const formateador = new Intl.DateTimeFormat('fr-CA', opciones); // 'fr-CA' entrega YYYY-MM-DD de forma nativa
+    return formateador.format(new Date());
   }
 
   /* =========================================================
       NAVEGACIÓN
   ========================================================= */
-
   irANuevaVenta(): void {
-
     this.router.navigate(['/ventas/nueva']);
-
   }
 
   /* =========================================================
       TOGGLE ROW
   ========================================================= */
-
   toggleRow(venta: any): void {
-
     const key = venta.ventaID;
 
-    // cerrar si ya está abierto
     if (this.expandedRows[key]) {
-
       delete this.expandedRows[key];
-
     } else {
-
-      // modo single
       this.expandedRows = {};
-
       this.expandedRows[key] = true;
-
     }
 
-    // 🔥 IMPORTANTE PARA ONPUSH
     this.expandedRows = { ...this.expandedRows };
-
-    // 🔥 FORZAR RENDER
     this.cdr.detectChanges();
-
   }
 
   /* =========================================================
       CARGAR RESUMEN
   ========================================================= */
-
   cargarResumen(): void {
-
     // PRODUCTOS
-
     this.productoService.getProductos().subscribe({
-
       next: (lista) => {
-
         this.totalProductos = lista.length;
-
-        this.productosCriticos =
-          lista.filter(p => p.stock <= p.stockMinimo);
-
-        this.totalAlertas =
-          this.productosCriticos.length;
-
+        this.productosCriticos = lista.filter(p => p.stock <= p.stockMinimo);
+        this.totalAlertas = this.productosCriticos.length;
         this.cdr.markForCheck();
-
       },
-
       error: (err) => {
-
-        console.error(
-          'Error al cargar productos:',
-          err
-        );
-
+        console.error('Error al cargar productos:', err);
       }
-
     });
 
     // MARCAS
-
     this.marcaService.getActivas().subscribe({
-
       next: (marcas) => {
-
         this.totalMarcas = marcas.length;
-
         this.cdr.markForCheck();
-
       },
-
       error: (err) => {
-
-        console.error(
-          'Error al cargar marcas:',
-          err
-        );
-
+        console.error('Error al cargar marcas:', err);
       }
-
     });
 
     // VENTAS DEL DÍA
-
     this.cargarVentasDelDia();
-
   }
 
   /* =========================================================
-      VENTAS DEL DÍA
+      VENTAS DEL DÍA (USANDO ZONA HORARIA LIMA)
   ========================================================= */
-
   cargarVentasDelDia(): void {
-
-    const hoy = new Date();
+    // Corregido: Ya no usa la hora local del dispositivo del cliente
+    const hoyPeru = this.getJavaDatePeru();
 
     this.ventaService
-      .getPorFecha(hoy)
+      .getPorFecha(hoyPeru)
       .subscribe({
-
         next: (ventas) => {
-
-          this.ventasDia =
-            ventas.reduce(
-              (acumulado, venta) =>
-                acumulado + venta.total,
-              0
-            );
-
-          this.cdr.markForCheck();
-
-        },
-
-        error: (err) => {
-
-          console.error(
-            'Error al cargar ventas del día:',
-            err
+          this.ventasDia = ventas.reduce(
+            (acumulado, venta) => acumulado + venta.total,
+            0
           );
-
+          this.cdr.markForCheck();
+        },
+        error: (err) => {
+          console.error('Error al cargar ventas del día:', err);
         }
-
       });
-
   }
 
   /* =========================================================
-      ABRIR MODAL
+      ABRIR MODAL (SETEA FILTRO EN FECHA PERÚ)
   ========================================================= */
-
   abrirModalReporte(): void {
-
-    const hoy =
-      new Date()
-        .toISOString()
-        .split('T')[0];
-
-    this.filtroReporte.fecha = hoy;
-
+    // Corregido: Ya no usa .toISOString() que causaba saltos de día no deseados
+    this.filtroReporte.fecha = this.getFechaStringPeru();
     this.filtroReporte.productoId = null;
-
     this.listaVentasFiltradas = [];
-
     this.verModalReporte = true;
-
     this.cdr.markForCheck();
 
-    // evitar foco automático calendario
-
+    // Evitar foco automático en el calendario
     setTimeout(() => {
-
-      if (
-        this.btnCancelar &&
-        this.btnCancelar.nativeElement
-      ) {
-
+      if (this.btnCancelar && this.btnCancelar.nativeElement) {
         this.btnCancelar.nativeElement.focus();
-
       }
-
     }, 250);
-
   }
 
   /* =========================================================
       CERRAR MODAL
   ========================================================= */
-
   cerrarModalReporte(): void {
-
     this.verModalReporte = false;
-
     this.cdr.markForCheck();
-
   }
 
   /* =========================================================
       GENERAR REPORTE
   ========================================================= */
-
   generarReporte(): void {
-
     if (!this.filtroReporte.fecha) {
-
-      console.warn(
-        'Debe seleccionar una fecha válida.'
-      );
-
+      console.warn('Debe seleccionar una fecha válida.');
       return;
-
     }
 
     const parametrosBackend = {
-
       fechaStr: this.filtroReporte.fecha,
-
       productoId:
-        this.filtroReporte.productoId &&
-        this.filtroReporte.productoId > 0
+        this.filtroReporte.productoId && this.filtroReporte.productoId > 0
           ? Number(this.filtroReporte.productoId)
           : null
-
     };
 
-    const [year, month, day] =
-      parametrosBackend.fechaStr
-        .split('-')
-        .map(Number);
+    const [year, month, day] = parametrosBackend.fechaStr.split('-').map(Number);
 
-    const fechaDate =
-      new Date(
-        year,
-        month - 1,
-        day,
-        0,
-        0,
-        0
-      );
+    // Corregido: Instancia la fecha de consulta limpia y libre de desfases de huso horario
+    const fechaDate = new Date(year, month - 1, day, 0, 0, 0);
 
     this.ventaService
-      .getVentasFiltro(
-        fechaDate,
-        parametrosBackend.productoId
-      )
+      .getVentasFiltro(fechaDate, parametrosBackend.productoId)
       .subscribe({
-
         next: (ventasDtoLista) => {
-
-          this.listaVentasFiltradas =
-            ventasDtoLista || [];
-            
-
-        
-
-          // reset expansión
-          this.expandedRows = {};
-
-          this.cdr.detectChanges();
-
+          this.listaVentasFiltradas = ventasDtoLista || [];
+          this.expandedRows = {}; // Reset de la fila expandida
+          this.cdr.detectChanges(); // Forzamos actualización de vista con OnPush
         },
-
         error: (err) => {
-
-          console.error(
-            'Error al recuperar ventas:',
-            err
-          );
-
+          console.error('Error al recuperar ventas:', err);
         }
-
       });
-
   }
-
 }
