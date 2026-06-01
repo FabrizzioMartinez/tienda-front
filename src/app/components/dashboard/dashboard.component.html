@@ -191,7 +191,7 @@
 <p-dialog 
   [(visible)]="verModalReporte" 
   [modal]="true" 
-  [style]="{ width: '100%', 'max-width': '950px', 'font-family': 'inherit', margin: '0 12px' }" 
+  [style]="{ width: '100%', 'max-width': '1100px', 'font-family': 'inherit', margin: '0 12px' }" 
   [contentStyle]="{ 'overflow': 'auto', 'max-height': '75vh', 'padding-top': '4px' }" 
   [draggable]="false" 
   [resizable]="false"
@@ -214,18 +214,24 @@
   <form (ngSubmit)="generarReporte()" style="margin-top: 0;">
     <div style="display: flex; flex-wrap: wrap; gap: 14px; background: #f8fafc; padding: 16px; border-radius: 12px; margin-bottom: 20px; align-items: flex-end;">
       
-      <div class="p-field" style="display: flex; flex-direction: column; gap: 6px; flex: 1 1 220px;">
-        <label for="buscarFiltroGlobal" style="font-weight: 600; color: #475569; font-size: 0.85rem; white-space: nowrap;">Filtrar en Resultados</label>
-        <div style="position: relative; width: 100%;">
-          <i class="pi pi-search" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 0.9rem;"></i>
-          <input 
-            id="buscarFiltroGlobal"
-            type="text" 
-            pInputText 
-            (input)="dt.filterGlobal($any($event.target).value, 'contains')" 
-            placeholder="Buscar por cliente, N°..." 
-            style="width: 100%; padding-left: 36px; height: 40px; border-radius: 6px; border: 1px solid #e2e8f0; font-size: 0.85rem;" />
-        </div>
+      <div class="p-field" style="display: flex; flex-direction: column; gap: 6px; flex: 1 1 260px;">
+        <label for="prod" style="font-weight: 600; color: #475569; font-size: 0.85rem; white-space: nowrap;">Producto (Opcional)</label>
+        <p-autoComplete 
+          id="prod" 
+          styleClass="w-full" 
+          inputStyleClass="w-full"
+          [(ngModel)]="productoSeleccionado" 
+          [ngModelOptions]="{standalone: true}"
+          [suggestions]="sugerenciasProductos" 
+          (completeMethod)="buscarProductos($event)" 
+          (onSelect)="onProductoSeleccionado($event)" 
+          optionLabel="nombreMostrar" 
+          placeholder="✨ Todos los Productos"
+          [showClear]="true"
+          [dropdown]="true"              
+          style="height: 40px;"
+          appendTo="body">
+        </p-autoComplete>
       </div>
 
       <div class="p-field" style="display: flex; flex-direction: column; gap: 6px; flex: 1 1 180px;">
@@ -242,33 +248,25 @@
           [autofocus]="false" 
           appendTo="body" 
           placeholder="Seleccione una fecha"
+          [disabled]="enviarSoloId"
           styleClass="w-full high-premium-calendar">
         </p-datepicker>
       </div>
 
-      <div class="p-field" style="display: flex; flex-direction: column; gap: 6px; flex: 1 1 180px;">
-        <label for="filtroProductoId" style="font-weight: 600; color: #475569; font-size: 0.85rem; white-space: nowrap;">Producto (Opcional)</label>
-        <p-select 
-          id="filtroProductoId"
-          name="filtroProd"
-          [(ngModel)]="filtroReporte.productoId" 
-          [options]="productosCriticos"
-          optionValue="productoID"
-          optionLabel="nombre"
-          [filter]="true"
-          filterBy="nombre"
-          [autofocus]="false"
-          appendTo="body" 
-          placeholder="✨ Todos los Productos"
-          [showClear]="true"
-          styleClass="w-full premium-select-box">
-          <ng-template let-prod pTemplate="item">
-            <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 8px;">
-              <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ prod.nombre }}</span>
-              <span *ngIf="prod.abreviatura" style="font-size: 0.8rem; color: #94a3b8; font-weight: 500;">[{{ prod.abreviatura }}]</span>
-            </div>
-          </ng-template>
-        </p-select>
+      <div class="p-field" style="display: flex; flex-direction: column; gap: 6px; flex: 0 0 auto;">
+        <span style="font-size: 0.85rem; height: 17px; display: block; visibility: hidden; select: none;">&nbsp;</span>
+        <div style="display: flex; align-items: center; gap: 8px; height: 40px; padding: 0 4px;">
+          <input 
+            type="checkbox" 
+            id="chkSoloId" 
+            [(ngModel)]="enviarSoloId" 
+            [ngModelOptions]="{standalone: true}"
+            (change)="cambiarHistorico()"
+            style="cursor: pointer; width: 16px; height: 16px; accent-color: #0f172a; margin: 0;" />
+          <label for="chkSoloId" style="font-size: 0.85rem; color: #475569; font-weight: 600; cursor: pointer; user-select: none; white-space: nowrap;">
+            Histórico (Solo ID)
+          </label>
+        </div>
       </div>
 
       <div style="display: flex; flex: 1 1 auto; justify-content: flex-end; height: 40px;">
@@ -277,6 +275,7 @@
           <span style="color: #ffffff !important;">Consultar</span>
         </button>
       </div>
+
     </div>
   </form>
 
@@ -295,6 +294,21 @@
       dropdownAppendTo="'body'"
       currentPageReportTemplate="{first}-{last} de {totalRecords}"
       [showCurrentPageReport]="true">
+
+      <ng-template pTemplate="caption">
+        <div style="display: flex; justify-content: flex-start; align-items: center; padding-bottom: 4px;">
+          <div style="position: relative; width: 100%; max-width: 320px;">
+            <i class="pi pi-search" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 0.9rem;"></i>
+            <input 
+              id="buscarFiltroGlobal"
+              type="text" 
+              pInputText 
+              (input)="dt.filterGlobal($any($event.target).value, 'contains')" 
+              placeholder="Buscar por cliente, N°..." 
+              style="width: 100%; padding-left: 36px; height: 38px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 0.85rem; background: #ffffff;" />
+          </div>
+        </div>
+      </ng-template>
 
       <ng-template pTemplate="header">
         <tr>
@@ -337,7 +351,7 @@
 
           <td style="color: #475569;">
             <span class="p-column-title block md:hidden" style="font-weight: 600; color: #64748b; margin-bottom: 4px;">Cliente</span>
-            {{ venta.clienteID === 1 ? 'Sin Cliente' : venta.nombreCliente }}
+            {{ venta.clienteID === 1 ? 'Sin Cliente' : venta.clienteNombre }}
           </td>
           
           <td style="text-align: center; vertical-align: middle;">
@@ -367,20 +381,12 @@
         <tr *ngIf="expandedRows[venta.ventaID]" style="background: #fafafa !important;">
           <td colspan="5" style="padding: 12px 16px 16px 16px; border-bottom: 1px solid #e2e8f0;">
             <div style="padding-top: 4px;">
-              
               <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
-                <span style="font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em;">
-                  Items vendidos
-                </span>
+                <span style="font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em;">Items vendidos</span>
                 <span style="height: 1px; flex-grow: 1; background: #e2e8f0;"></span>
               </div>
 
-              <p-table
-                [value]="venta.detalles"
-                responsiveLayout="stack"
-                [breakpoint]="'768px'"
-                styleClass="p-datatable-sm no-borders-table">
-                
+              <p-table [value]="venta.detalles" responsiveLayout="stack" [breakpoint]="'768px'" styleClass="p-datatable-sm no-borders-table">
                 <ng-template pTemplate="header">
                   <tr>
                     <th style="font-size: 0.75rem; color: #94a3b8; font-weight: 600; background: transparent; padding: 4px 0; border: none;">Producto</th>
@@ -392,36 +398,33 @@
 
                 <ng-template pTemplate="body" let-detalle>
                   <tr style="background: transparent !important;">
-                    
-                    <td style="font-size: 0.8rem; color: #475569; font-weight: 500; padding: 6px 0; border: none;">
-                      <span class="p-column-title block md:hidden" style="font-weight: 600; color: #94a3b8; font-size: 0.75rem; margin-bottom: 2px;">Producto</span>
-                      {{ detalle.nombreProducto }}
-                    </td>
-                    
-                    <td style="font-size: 0.8rem; color: #64748b; padding: 6px 0; text-align: center; border: none;">
-                      <span class="p-column-title block md:hidden" style="font-weight: 600; color: #94a3b8; font-size: 0.75rem; margin-bottom: 2px;">Cant.</span>
-                      {{ detalle.cantidad }}
-                    </td>
-                    
-                    <td style="font-size: 0.8rem; color: #64748b; padding: 6px 0; text-align: right; border: none;">
-                      <span class="p-column-title block md:hidden" style="font-weight: 600; color: #94a3b8; font-size: 0.75rem; margin-bottom: 2px;">Precio</span>
-                      S/ {{ detalle.precioUnitario | number:'1.2-2' }}
-                    </td>
-                    
-                    <td style="font-size: 0.8rem; color: #334155; font-weight: 600; padding: 6px 0; text-align: right; border: none;">
-                      <span class="p-column-title block md:hidden" style="font-weight: 600; color: #94a3b8; font-size: 0.75rem; margin-bottom: 2px;">Subtotal</span>
-                      S/ {{ detalle.subtotal | number:'1.2-2' }}
-                    </td>
-
+                    <td style="font-size: 0.8rem; color: #475569; font-weight: 500; padding: 6px 0; border: none;">{{ detalle.nombreProducto }}</td>
+                    <td style="font-size: 0.8rem; color: #64748b; padding: 6px 0; text-align: center; border: none;">{{ detalle.cantidad }}</td>
+                    <td style="font-size: 0.8rem; color: #64748b; padding: 6px 0; text-align: right; border: none;">S/ {{ detalle.precioUnitario | number:'1.2-2' }}</td>
+                    <td style="font-size: 0.8rem; color: #334155; font-weight: 600; padding: 6px 0; text-align: right; border: none;">S/ {{ detalle.subtotal | number:'1.2-2' }}</td>
                   </tr>
                 </ng-template>
               </p-table>
-
             </div>
           </td>
         </tr>
       </ng-template>
     </p-table>
+
+    <div *ngIf="listaVentasFiltradas && listaVentasFiltradas.length > 0" style="display: flex; justify-content: flex-end; background: #f8fafc; border: 1px solid #e2e8f0; border-top: none; border-radius: 0 0 12px 12px; padding: 16px 24px; gap: 40px;">
+      <div style="text-align: right;">
+        <div style="font-size: 0.85rem; color: #64748b; font-weight: 600; margin-bottom: 4px;">Total Efectivo:</div>
+        <div style="font-size: 0.95rem; color: #166534; font-weight: 700;">S/ {{ calcularTotalEfectivo() | number:'1.2-2' }}</div>
+      </div>
+      <div style="text-align: right;">
+        <div style="font-size: 0.85rem; color: #64748b; font-weight: 600; margin-bottom: 4px;">Total Digital:</div>
+        <div style="font-size: 0.95rem; color: #0369a1; font-weight: 700;">S/ {{ calcularTotalDigital() | number:'1.2-2' }}</div>
+      </div>
+      <div style="text-align: right; border-left: 2px dashed #cbd5e1; padding-left: 40px;">
+        <div style="font-size: 0.85rem; color: #0f172a; font-weight: 700; margin-bottom: 4px;">Total General:</div>
+        <div style="font-size: 1.1rem; color: #0f172a; font-weight: 800;">S/ {{ calcularTotalGeneral() | number:'1.2-2' }}</div>
+      </div>
+    </div>
   </div>
 
   <div style="display: flex; justify-content: flex-end; border-top: 1px solid #e2e8f0; padding-top: 15px;">

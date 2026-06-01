@@ -15,7 +15,7 @@ import { ProductoService } from '../../services/producto.service';
 import { MarcaService } from '../../services/marca.service';
 import { VentaService } from '../../services/venta.service';
 
-import { ProductoDto } from '../../models/producto.model';
+import { Producto, ProductoBusquedaDto, ProductoDto } from '../../models/producto.model';
 import { VentaDto } from '../../models/venta.model';
 
 import { TableModule } from 'primeng/table';
@@ -26,10 +26,13 @@ import { ButtonModule } from 'primeng/button';
 import { RippleModule } from 'primeng/ripple';
 
 import { trigger, state, style, transition, animate } from '@angular/animations';
+import { AutoCompleteModule } from 'primeng/autocomplete';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
+  providers: [MessageService],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
@@ -40,7 +43,8 @@ import { trigger, state, style, transition, animate } from '@angular/animations'
     SelectModule,
     DatePickerModule,
     RippleModule,
-    ButtonModule
+    ButtonModule,
+    AutoCompleteModule
   ],
   animations: [
     trigger('rowExpansionTrigger', [
@@ -78,12 +82,15 @@ export class DashboardComponent implements OnInit {
   ventasDia = 0;
 
   productosCriticos: ProductoDto[] = [];
+  sugerenciasProductos: ProductoBusquedaDto[] = [];
+  productoSeleccionado: Producto | null = null;
 
   /* =========================================================
       MODAL REPORTE
   ========================================================= */
   verModalReporte = false;
   listaVentasFiltradas: VentaDto[] = [];
+  enviarSoloId: boolean = false;
 
   /* =========================================================
       EXPANSIÓN DE FILAS
@@ -106,7 +113,8 @@ export class DashboardComponent implements OnInit {
     private marcaService: MarcaService,
     private ventaService: VentaService,
     private cdr: ChangeDetectorRef,
-    private router: Router
+    private router: Router,
+    private messageService: MessageService
   ) {}
 
   /* =========================================================
@@ -193,6 +201,20 @@ export class DashboardComponent implements OnInit {
     this.cargarVentasDelDia();
   }
 
+  onProductoSeleccionado(event: any): void {
+    const producto = event.value || event; 
+    
+    if (producto && producto.stock === 0) {
+      this.messageService.add({ 
+        severity: 'error', 
+        summary: 'Producto Agotado',
+        life: 2500 
+      });
+      
+      this.productoSeleccionado = null; 
+    }
+  }
+
   /* =========================================================
       VENTAS DEL DÍA (USANDO ZONA HORARIA LIMA)
   ========================================================= */
@@ -241,30 +263,71 @@ export class DashboardComponent implements OnInit {
   cerrarModalReporte(): void {
     this.verModalReporte = false;
     this.cdr.markForCheck();
+    this.sugerenciasProductos = [];
+    this.productoSeleccionado = null;
   }
+
+  buscarProductos(event: any): void {
+      const query = (event.query ?? '').trim();
+      
+      if (query.length < 3) {
+        this.sugerenciasProductos = [];
+        return;
+      }
+  
+      this.productoService.buscarProductos(query).subscribe({
+        next: (res: any) => {
+          const datos: ProductoBusquedaDto[] = res?.$values ?? res?.data ?? res ?? [];
+          this.sugerenciasProductos = datos.slice(0, 5).map(p => {
+            const tamanoTexto = p.tamaño ? ` - ${p.tamaño}` : '';
+            const baseNombre = `${p.nombre}${tamanoTexto}`;
+  
+            return {
+              ...p,
+              nombreMostrar: p.stock === 0 ? `${baseNombre} (Sin Stock)` : baseNombre
+            };
+          });
+          this.cdr.markForCheck();
+        },
+        error: (err) => {
+          console.error('Error al buscar productos:', err);
+          this.sugerenciasProductos = [];
+        }
+      });
+    }
 
   /* =========================================================
       GENERAR REPORTE
   ========================================================= */
-  generarReporte(): void {
-    if (!this.filtroReporte.fecha) {
-      console.warn('Debe seleccionar una fecha válida.');
-      return;
+
+  cambiarHistorico(): void {
+    if (this.enviarSoloId) {
+      this.filtroReporte.fecha = ''; // Cambiado de null a cadena vacía
     }
+  }
+  generarReporte(): void {
+    
 
     const parametrosBackend = {
       fechaStr: this.filtroReporte.fecha,
-      productoId:
-        this.filtroReporte.productoId && this.filtroReporte.productoId > 0
-          ? Number(this.filtroReporte.productoId)
-          : null
+      // Extraemos el ID directamente del objeto seleccionado por el AutoComplete
+      productoId: this.productoSeleccionado && this.productoSeleccionado.productoID > 0
+        ? Number(this.productoSeleccionado.productoID)
+        : null
     };
 
-    const [year, month, day] = parametrosBackend.fechaStr.split('-').map(Number);
+    // REGLA NUEVA: Si el check "enviarSoloId" está activo, limpiamos la fecha (la mandamos null)
+    // De lo contrario, calculamos la fecha normal sin desfases.
+    let fechaDate: Date | null = null;
+    
+    if (!this.enviarSoloId) {
+      const [year, month, day] = parametrosBackend.fechaStr.split('-').map(Number);
+      fechaDate = new Date(year, month - 1, day, 0, 0, 0);
+    } else {
+      console.log('Búsqueda por ID puro: Se limpia el filtro de fecha.');
+    }
 
-    // Corregido: Instancia la fecha de consulta limpia y libre de desfases de huso horario
-    const fechaDate = new Date(year, month - 1, day, 0, 0, 0);
-
+    // Enviamos fechaDate (que puede ser Date o null) junto al ID del producto
     this.ventaService
       .getVentasFiltro(fechaDate, parametrosBackend.productoId)
       .subscribe({
@@ -278,4 +341,22 @@ export class DashboardComponent implements OnInit {
         }
       });
   }
+  calcularTotalEfectivo(): number {
+  if (!this.listaVentasFiltradas) return 0;
+  return this.listaVentasFiltradas
+    .filter(v => v.esEfectivo)
+    .reduce((sum, v) => sum + (v.montoEfectivo || v.total || 0), 0);
+}
+
+calcularTotalDigital(): number {
+  if (!this.listaVentasFiltradas) return 0;
+  return this.listaVentasFiltradas
+    .filter(v => v.esDigital)
+    .reduce((sum, v) => sum + (v.montoDigital || v.total || 0), 0);
+}
+
+calcularTotalGeneral(): number {
+  if (!this.listaVentasFiltradas) return 0;
+  return this.listaVentasFiltradas.reduce((sum, v) => sum + (v.total || 0), 0);
+}
 }

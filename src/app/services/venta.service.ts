@@ -44,22 +44,26 @@ export class VentaService {
     .pipe(map(response => response.data));
 }
 
-getVentasFiltro(fecha: Date, productoId?: number | null): Observable<VentaDto[]> {
+getVentasFiltro(fecha: Date | null, productoId?: number | null): Observable<VentaDto[]> {
+  let params = new HttpParams();
+
+  if (fecha) {
     const fechaPeru = new Intl.DateTimeFormat('en-CA', {
       timeZone: 'America/Lima',
       year: 'numeric',
       month: '2-digit',
       day: '2-digit'
     }).format(fecha);
-
-    let params = new HttpParams().set('fecha', fechaPeru);
-
-    if (productoId && productoId > 0) {
-      params = params.set('productoId', productoId.toString());
-    }
-
-    return this.http
-      .get<ApiResponse<VentaDto[]>>(`${this.apiUrl}/filtrar`, { params })
-      .pipe(map(response => response.data));
+    
+    params = params.set('fecha', fechaPeru);
   }
+
+  if (productoId && productoId > 0) {
+    params = params.set('productoId', productoId.toString());
+  }
+
+  return this.http
+    .get<ApiResponse<VentaDto[]>>(`${this.apiUrl}/filtrar`, { params })
+    .pipe(map(response => response.data));
+}
 }
