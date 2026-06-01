@@ -11,46 +11,104 @@
   </div>
   
   <p-table 
-    [value]="clientes" 
-    [paginator]="true" 
-    [rows]="10" 
-    styleClass="p-datatable-striped clientes-table"
-    [responsiveLayout]="'scroll'"
-    [rowTrackBy]="trackByClienteId"> <ng-template pTemplate="header">
-      <tr>
-        <th>Nombre / Razón Social</th>
-        <th>Tipo Doc.</th>
-        <th>Número</th>
-        <th>Email</th>
-        <th>Teléfono</th>
-        <th style="width: 80px; text-align: center;">Acciones</th>
-      </tr>
-    </ng-template>
+  [value]="clientes" 
+  [paginator]="true" 
+  [rows]="10" 
+  [rowsPerPageOptions]="[5, 10, 20, 50]"
+  responsiveLayout="stack"
+  breakpoint="768px"
+  styleClass="p-datatable-striped modern-table"
+  currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} productos"
+  [showCurrentPageReport]="true"
+  [rowTrackBy]="trackByClienteId"
+  [style]="{ 'width': '100%' }">
 
-    <ng-template pTemplate="body" let-cliente>
-      <tr>
-        <td>{{ cliente.nombreRazonSocial }}</td>
-        <td>{{ cliente.tipoDocumentoTexto }}</td>
-        <td>{{ cliente.numeroDocumento }}</td>
-        <td>{{ cliente.email }}</td>
-        <td>{{ cliente.telefono }}</td>
-        <td style="text-align: center;">
-          <button pButton 
-                  type="button" 
-                  icon="pi pi-pencil" 
-                  class="p-button-rounded p-button-text p-button-warning" 
-                  title="Editar Cliente"
-                  (click)="editarCliente(cliente)">
-          </button>
-        </td>
-      </tr>
-    </ng-template>
+  <ng-template pTemplate="header">
+    <tr>
+      <th style="text-align: left; padding: 14px 20px; background: #f8fafc; color: #64748b; font-size: 0.85rem; font-weight: 600; border-bottom: 1px solid #e2e8f0;">
+        Nombre / Razón Social
+      </th>
+      <th style="text-align: center; padding: 14px; background: #f8fafc; color: #64748b; font-size: 0.85rem; font-weight: 600; border-bottom: 1px solid #e2e8f0; width: 120px;">
+        Tipo Doc.
+      </th>
+      <th style="text-align: center; padding: 14px; background: #f8fafc; color: #64748b; font-size: 0.85rem; font-weight: 600; border-bottom: 1px solid #e2e8f0; width: 140px;">
+        Número
+      </th>
+      <th style="text-align: left; padding: 14px; background: #f8fafc; color: #64748b; font-size: 0.85rem; font-weight: 600; border-bottom: 1px solid #e2e8f0;">
+        Email
+      </th>
+      <th style="text-align: center; padding: 14px; background: #f8fafc; color: #64748b; font-size: 0.85rem; font-weight: 600; border-bottom: 1px solid #e2e8f0; width: 130px;">
+        Teléfono
+      </th>
+      <th style="text-align: center; padding: 14px; background: #f8fafc; color: #64748b; font-weight: 600; border-bottom: 1px solid #e2e8f0; width: 80px;">
+        Editar
+      </th>
+    </tr>
+  </ng-template>
 
-    <ng-template pTemplate="emptymessage">
-      <tr>
-        <td colspan="6" style="text-align:center;">No se encontraron clientes registrados.</td>
-      </tr>
-    </ng-template>
+  <ng-template pTemplate="body" let-cliente>
+    <tr style="border-bottom: 1px solid #f1f5f9; background: white;">
+      
+      <td style="padding: 14px 20px; vertical-align: middle;">
+        <span class="p-column-title block md:hidden" style="font-weight: 600; color: #64748b; font-size: 0.85rem; margin-bottom: 4px;">Nombre / Razón Social</span>
+        <div style="font-weight: 600; color: #334155; word-break: break-word;">
+          {{ cliente.nombreRazonSocial }}
+        </div>
+      </td>
+
+      <td style="padding: 14px; text-align: center; vertical-align: middle;">
+        <span class="p-column-title block md:hidden" style="font-weight: 600; color: #64748b; font-size: 0.85rem; margin-bottom: 4px;">Tipo Doc.</span>
+        <div style="color: #475569; font-weight: 500;">
+          {{ cliente.tipoDocumentoTexto || '—' }}
+        </div>
+      </td>
+
+      <td style="padding: 14px; text-align: center; vertical-align: middle;">
+        <span class="p-column-title block md:hidden" style="font-weight: 600; color: #64748b; font-size: 0.85rem; margin-bottom: 4px;">Número</span>
+        <div style="font-weight: 600; color: #0f172a;">
+          {{ cliente.numeroDocumento || '—' }}
+        </div>
+      </td>
+
+      <td style="padding: 14px; vertical-align: middle;">
+        <span class="p-column-title block md:hidden" style="font-weight: 600; color: #64748b; font-size: 0.85rem; margin-bottom: 4px;">Email</span>
+        <div style="color: #475569; word-break: break-all;">
+          {{ cliente.email || '—' }}
+        </div>
+      </td>
+
+      <td style="padding: 14px; text-align: center; vertical-align: middle;">
+        <span class="p-column-title block md:hidden" style="font-weight: 600; color: #64748b; font-size: 0.85rem; margin-bottom: 4px;">Teléfono</span>
+        <div style="color: #64748b;">
+          {{ cliente.telefono || '—' }}
+        </div>
+      </td>
+
+      <td style="padding: 14px; text-align: center; vertical-align: middle;">
+        <span class="p-column-title block md:hidden" style="font-weight: 600; color: #64748b; font-size: 0.85rem; margin-bottom: 4px;">Editar</span>
+        <button 
+          type="button" 
+          (click)="editarCliente(cliente)" 
+          title="Editar Cliente" 
+          class="action-edit-btn"
+          style="background: none; border: none; cursor: pointer; font-size: 1.1rem; transition: transform 0.1s; display: inline-flex; align-items: center; justify-content: center; padding: 4px 8px;"
+          onmouseover="this.style.transform='scale(1.15)'"
+          onmouseout="this.style.transform='scale(1)'">
+          ✏️
+        </button>
+      </td>
+
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td colspan="6" style="text-align: center; padding: 30px; color: #64748b; font-size: 0.9rem;">
+        No se encontraron clientes registrados.
+      </td>
+    </tr>
+  </ng-template>
+
 </p-table>
 </div>
 
