@@ -204,6 +204,9 @@
 
 </div>
 
+<!-- =========================================================================
+    MODAL: CONSULTA DE VENTAS (MANTIENE DISEÑO ORIGINAL + ADAPTATIVO MOBILE)
+========================================================================= -->
 <p-dialog 
   [(visible)]="verModalReporte" 
   [modal]="true" 
@@ -216,6 +219,7 @@
   styleClass="premium-pop-dialog"
   (onHide)="cerrarModalReporte()">
   
+  <!-- Cabecera del Modal -->
   <ng-template pTemplate="header">
     <div style="display: flex; align-items: center; gap: 12px; width: 100%;">
       <div style="background: #f1f5f9; width: 40px; height: 40px; min-width: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
@@ -227,9 +231,11 @@
     </div>
   </ng-template>
 
+  <!-- Formulario de Filtros de Consulta -->
   <form (ngSubmit)="generarReporte()" style="margin-top: 0;">
     <div style="display: flex; flex-wrap: wrap; gap: 14px; background: #f8fafc; padding: 16px; border-radius: 12px; margin-bottom: 20px; align-items: flex-end;">
       
+      <!-- Filtro: Autocompletado de Producto -->
       <div class="p-field" style="display: flex; flex-direction: column; gap: 6px; flex: 1 1 240px;">
         <label for="prod" style="font-weight: 600; color: #475569; font-size: 0.85rem; white-space: nowrap;">Producto (Opcional)</label>
         <p-autoComplete 
@@ -250,6 +256,7 @@
         </p-autoComplete>
       </div>
 
+      <!-- Filtro: Fecha Desde -->
       <div class="p-field" style="display: flex; flex-direction: column; gap: 6px; flex: 1 1 160px;">
         <label for="fechaConsulta" style="font-weight: 600; color: #475569; font-size: 0.85rem; white-space: nowrap;">Fecha Desde *</label>
         <p-datepicker 
@@ -269,6 +276,7 @@
         </p-datepicker>
       </div>
 
+      <!-- Filtro: Fecha Hasta -->
       <div class="p-field" style="display: flex; flex-direction: column; gap: 6px; flex: 1 1 160px;">
         <label for="fechaHastaConsulta" style="font-weight: 600; color: #475569; font-size: 0.85rem; white-space: nowrap;">Fecha Hasta *</label>
         <p-datepicker 
@@ -288,6 +296,7 @@
         </p-datepicker>
       </div>
 
+      <!-- Checkbox: Solo Producto -->
       <div class="p-field" style="display: flex; flex-direction: column; gap: 6px; flex: 0 0 auto;">
         <span style="font-size: 0.85rem; height: 17px; display: block; visibility: hidden; user-select: none;">&nbsp;</span>
         <div style="display: flex; align-items: center; gap: 8px; height: 40px; padding: 0 4px;">
@@ -304,6 +313,7 @@
         </div>
       </div>
 
+      <!-- Botón Consultar -->
       <div style="display: flex; flex: 1 1 auto; justify-content: flex-end; height: 40px;">
         <button type="submit" class="saas-btn-primary" style="background: #0f172a; padding: 0 24px; border-radius: 10px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px; border: none; color: white; cursor: pointer; height: 40px; width: auto; min-width: 130px; white-space: nowrap;">
           <i class="pi pi-search" style="font-size: 0.85rem; color: #ffffff !important;"></i>
@@ -314,6 +324,7 @@
     </div>
   </form>
 
+  <!-- Grilla de Resultados de Ventas -->
   <div style="margin-bottom: 20px;">
     <p-table
       #dt
@@ -361,7 +372,7 @@
             Total <p-sortIcon field="total"></p-sortIcon>
           </th>
           <th style="background: #f8fafc; color: #64748b; font-size: 0.85rem; font-weight: 600; border-bottom: 1px solid #e2e8f0; text-align: center; width: 80px;">
-            Anular Venta
+            Acción
           </th>
         </tr>
       </ng-template>
@@ -395,18 +406,10 @@
           <td style="padding: 14px; text-align: center; vertical-align: middle;">
             <span class="p-column-title block md:hidden" style="font-weight: 600; color: #64748b; font-size: 0.85rem; margin-bottom: 4px;">Método de Pago</span>
             <div style="display: inline-flex; gap: 4px; justify-content: center; flex-wrap: wrap;">
-              <span *ngIf="venta.esCredito" style="background-color: #fef2f2; color: #991b1b; font-size: 0.72rem; font-weight: 600; padding: 4px 8px; border-radius: 6px; white-space: nowrap;">
-                ⏳ Crédito
-              </span>
-              <span *ngIf="!venta.esCredito && venta.esEfectivo && venta.esDigital" style="background-color: #fef3c7; color: #92400e; font-size: 0.72rem; font-weight: 600; padding: 4px 8px; border-radius: 6px; white-space: nowrap;">
-                🔄 Mixto
-              </span>
-              <span *ngIf="!venta.esCredito && venta.esEfectivo && !venta.esDigital" style="background-color: #dcfce7; color: #166534; font-size: 0.72rem; font-weight: 600; padding: 4px 8px; border-radius: 6px; white-space: nowrap;">
-                💵 Efectivo
-              </span>
-              <span *ngIf="!venta.esCredito && venta.esDigital && !venta.esEfectivo" style="background-color: #e0f2fe; color: #0369a1; font-size: 0.72rem; font-weight: 600; padding: 4px 8px; border-radius: 6px; white-space: nowrap;">
-                📱 Digital
-              </span>
+              <span *ngIf="venta.esCredito" style="background-color: #fef2f2; color: #991b1b; font-size: 0.72rem; font-weight: 600; padding: 4px 8px; border-radius: 6px; white-space: nowrap;">⏳ Crédito</span>
+              <span *ngIf="!venta.esCredito && venta.esEfectivo && venta.esDigital" style="background-color: #fef3c7; color: #92400e; font-size: 0.72rem; font-weight: 600; padding: 4px 8px; border-radius: 6px; white-space: nowrap;">🔄 Mixto</span>
+              <span *ngIf="!venta.esCredito && venta.esEfectivo && !venta.esDigital" style="background-color: #dcfce7; color: #166534; font-size: 0.72rem; font-weight: 600; padding: 4px 8px; border-radius: 6px; white-space: nowrap;">💵 Efectivo</span>
+              <span *ngIf="!venta.esCredito && venta.esDigital && !venta.esEfectivo" style="background-color: #e0f2fe; color: #0369a1; font-size: 0.72rem; font-weight: 600; padding: 4px 8px; border-radius: 6px; white-space: nowrap;">📱 Digital</span>
             </div>
           </td>
 
@@ -416,7 +419,7 @@
           </td>
 
           <td style="padding: 14px; text-align: center; vertical-align: middle;">
-            <span class="p-column-title block md:hidden" style="font-weight: 600; color: #64748b; font-size: 0.85rem; margin-bottom: 4px;">Anular Venta</span>
+            <span class="p-column-title block md:hidden" style="font-weight: 600; color: #64748b; font-size: 0.85rem; margin-bottom: 4px;">Anular</span>
             <button 
               type="button"
               pButton 
@@ -430,6 +433,7 @@
           </td>
         </tr>
 
+        <!-- Fila Expandible: Items Vendidos -->
         <tr *ngIf="expandedRows[venta.ventaID]" style="background: #fafafa !important;">
           <td colspan="6" style="padding: 16px 20px; border-bottom: 1px solid #e2e8f0;">
             <div style="padding-top: 4px;">
@@ -483,17 +487,61 @@
       </ng-template>
     </p-table>
 
+    <!-- 📊 SECCIÓN DE TOTALES PERFECCIONADA: Misma estética SaaS, cero desbordes -->
     <div *ngIf="listaVentasFiltradas && listaVentasFiltradas.length > 0" 
-         style="display: flex; justify-content: space-between; align-items: center; background: #f8fafc; border: 1px solid #e2e8f0; border-top: none; border-radius: 0 0 12px 12px; padding: 16px 24px; gap: 20px;">
+         class="dashboard-footer-responsive"
+         style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; background: #f8fafc; border: 1px solid #e2e8f0; border-top: none; border-radius: 0 0 12px 12px; padding: 16px 24px; gap: 20px; box-sizing: border-box;">
       
-      <div>
+      <!-- Inyección de estilos en línea inteligentes para conservar el diseño intacto -->
+      <style>
+        .dashboard-totals-group {
+          display: flex;
+          gap: 40px;
+          align-items: center;
+        }
+        .dashboard-divider-line {
+          border-left: 2px dashed #cbd5e1;
+          padding-left: 40px;
+        }
+        .dashboard-cancel-btn {
+          width: 120px;
+        }
+
+        /* En teléfonos se redistribuye fluidamente sin perder estilos */
+        @media (max-width: 767px) {
+          .dashboard-footer-responsive {
+            flex-direction: column-reverse !important;
+            align-items: stretch !important;
+            padding: 16px !important;
+            gap: 20px !important;
+          }
+          .dashboard-totals-group {
+            flex-direction: column !important;
+            align-items: stretch !important;
+            gap: 14px !important;
+          }
+          .dashboard-divider-line {
+            border-left: none !important;
+            padding-left: 0 !important;
+            border-top: 1px dashed #cbd5e1;
+            padding-top: 14px;
+          }
+          .dashboard-cancel-btn {
+            width: 100% !important;
+          }
+        }
+      </style>
+
+      <!-- Botón Cancelar original -->
+      <div class="dashboard-cancel-btn">
         <button #btnCancelar type="button" (click)="cerrarModalReporte()" class="saas-btn-secondary" 
-                style="width: 120px; min-height: 40px; display: inline-flex; justify-content: center; align-items: center; margin: 0; border: 1px solid #cbd5e1; background: white; border-radius: 8px; font-weight: 600; color: #475569; cursor: pointer;">
+                style="width: 100%; min-height: 40px; display: inline-flex; justify-content: center; align-items: center; margin: 0; border: 1px solid #cbd5e1; background: white; border-radius: 8px; font-weight: 600; color: #475569; cursor: pointer;">
           Salir
         </button>
       </div>
 
-      <div style="display: flex; gap: 40px; align-items: center;">
+      <!-- Bloques de totales originales intactos -->
+      <div class="dashboard-totals-group">
         <div style="text-align: right;">
           <div style="font-size: 0.85rem; color: #64748b; font-weight: 600; margin-bottom: 4px;">Total Efectivo:</div>
           <div style="font-size: 0.95rem; color: #166534; font-weight: 700;">S/ {{ calcularTotalEfectivo() | number:'1.2-2' }}</div>
@@ -502,7 +550,7 @@
           <div style="font-size: 0.85rem; color: #64748b; font-weight: 600; margin-bottom: 4px;">Total Digital:</div>
           <div style="font-size: 0.95rem; color: #0369a1; font-weight: 700;">S/ {{ calcularTotalDigital() | number:'1.2-2' }}</div>
         </div>
-        <div style="text-align: right; border-left: 2px dashed #cbd5e1; padding-left: 40px;">
+        <div class="dashboard-divider-line" style="text-align: right;">
           <div style="font-size: 0.85rem; color: #0f172a; font-weight: 700; margin-bottom: 4px;">Total General:</div>
           <div style="font-size: 1.1rem; color: #0f172a; font-weight: 800;">S/ {{ calcularTotalGeneral() | number:'1.2-2' }}</div>
         </div>
@@ -510,11 +558,12 @@
 
     </div>
 
+    <!-- Botón Cancelar de Contingencia (Solo visible si la tabla está vacía) -->
     <div *ngIf="!listaVentasFiltradas || listaVentasFiltradas.length === 0" 
          style="display: flex; justify-content: flex-end; border-top: 1px solid #e2e8f0; padding-top: 15px; margin-top: 15px;">
       <button type="button" (click)="cerrarModalReporte()" class="saas-btn-secondary" 
-              style="width: 120px; min-height: 40px; display: inline-flex; justify-content: center; align-items: center; border: 1px solid #cbd5e1; background: white; border-radius: 8px; font-weight: 600; color: #475569; cursor: pointer;">
-        Salir
+              style="width: 100%; max-width: 120px; min-height: 40px; display: inline-flex; justify-content: center; align-items: center; border: 1px solid #cbd5e1; background: white; border-radius: 8px; font-weight: 600; color: #475569; cursor: pointer;">
+        Cancelar
       </button>
     </div>
 
