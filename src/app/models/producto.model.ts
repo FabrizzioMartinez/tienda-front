@@ -20,7 +20,12 @@ export interface ProductoDto {
   tipoProducto: string;
   unidadMedida: string;
   abreviatura: string;
-  stockMinimo:number;
+  stockMinimo: number;
+
+  // 🌟 Campos relacionales declarados como opcionales / nullables
+  marcaID?: number | null;
+  tipoProductoID?: number | null;
+  unidadMedidaID?: number | null;
 }
 
 // 3. Entidad completa (Úsala solo para formularios de registro o edición profunda)

@@ -1,4 +1,10 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef
+} from '@angular/core';
+
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -12,28 +18,51 @@ import { Producto, ProductoDto } from '../../models/producto.model';
 import { MarcaDto } from '../../models/marca.model';
 import { TipoProductoDto } from '../../models/tipo-producto.model';
 import { UnidadMedidaDto } from '../../models/unidad-medida.model';
+
 import { TableModule } from 'primeng/table';
+import { DialogModule } from 'primeng/dialog';
+import { SelectModule } from 'primeng/select';
+import { ButtonModule } from 'primeng/button';
+import { InputNumberModule } from 'primeng/inputnumber';
 
 @Component({
   selector: 'app-producto-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, TableModule],
+  changeDetection: ChangeDetectionStrategy.OnPush, 
+  imports: [
+    CommonModule,
+    FormsModule,
+    TableModule,
+    DialogModule,
+    SelectModule,
+    ButtonModule,
+    InputNumberModule
+  ],
   templateUrl: './producto-list.component.html',
   styleUrl: './producto-list.component.css',
 })
 export class ProductoListComponent implements OnInit {
-  listaProductos: ProductoDto[] = []; // Usamos el DTO de lista
+  /* =========================================================
+      CATÁLOGOS Y LISTAS
+  ========================================================= */
+  listaProductos: ProductoDto[] = []; 
   listaMarcas: MarcaDto[] = [];
   listaTipos: TipoProductoDto[] = [];
   listaUnidades: UnidadMedidaDto[] = [];
 
-  nuevoProducto: Producto = this.initProducto();
-  
+  /* =========================================================
+      MODAL: GESTIÓN INTEGRAL (CREAR / EDITAR COMPLETO)
+  ========================================================= */
   verModal: boolean = false;
+  esEdicion: boolean = false;
+  nuevoProducto: Producto = this.initProducto();
+
+  /* =========================================================
+      ESTADOS COMUNES
+  ========================================================= */
   terminoBusqueda: string = '';
   mostrarToast: boolean = false;
   mensajeToast: string = '';
-  esEdicion: boolean = false;
 
   constructor(
     private productoService: ProductoService,
@@ -47,55 +76,112 @@ export class ProductoListComponent implements OnInit {
     this.cargarDatos();
   }
 
+  /* =========================================================
+      CARGA DE DATOS
+  ========================================================= */
   cargarDatos(): void {
-    // 1. Cargar productos con DTO
-    this.productoService.getProductos().subscribe(data => {
-      this.listaProductos = data || [];
-      this.cdr.detectChanges();
+    this.productoService.getProductos().subscribe({
+      next: (data) => {
+        this.listaProductos = data || [];
+        this.cdr.markForCheck(); 
+      },
+      error: (err) => console.error(err)
     });
     
-    // 2. Cargar catálogos relacionales
-    this.marcaService.getActivas().subscribe(data => this.listaMarcas = data);
-    this.tipoService.getActivos().subscribe(data => this.listaTipos = data);
-    this.unidadService.getTodas().subscribe(data => this.listaUnidades = data);
+    this.marcaService.getActivas().subscribe({
+      next: (data) => {
+        this.listaMarcas = data || [];
+        this.cdr.markForCheck(); 
+      },
+      error: (err) => console.error(err)
+    });
+
+    this.tipoService.getActivos().subscribe({
+      next: (data) => {
+        this.listaTipos = data || [];
+        this.cdr.markForCheck();
+      },
+      error: (err) => console.error(err)
+    });
+
+    this.unidadService.getTodas().subscribe({
+      next: (data) => {
+        this.listaUnidades = data || [];
+        this.cdr.markForCheck();
+      },
+      error: (err) => console.error(err)
+    });
   }
 
   get productosFiltrados(): ProductoDto[] {
     if (!this.terminoBusqueda.trim()) return this.listaProductos;
-    return this.listaProductos.filter(p => 
-      p.nombre.toLowerCase().includes(this.terminoBusqueda.toLowerCase())
-    );
+    const busqueda = this.terminoBusqueda.toLowerCase();
+    return this.listaProductos.filter(p => p.nombre.toLowerCase().includes(busqueda));
   }
 
+  /* =========================================================
+      ACCIONES: FORMULARIO PRINCIPAL (GUARDAR / REGISTRAR)
+  ========================================================= */
   registrarProducto(): void {
     if (!this.nuevoProducto.nombre?.trim()) return;
+
+    this.nuevoProducto.nombre = this.nuevoProducto.nombre
+      .trim()
+      .toLowerCase()
+      .split(' ')
+      .map(palabra => palabra.charAt(0).toUpperCase() + palabra.slice(1))
+      .join(' ');
 
     this.nuevoProducto.fechaModificacion = new Date();
     
     this.productoService.guardar(this.nuevoProducto).subscribe({
       next: () => {
-        this.mostrarMensaje('Producto guardado exitosamente');
-        this.cerrarModal(); // 🧼 Cierra el modal y limpia de raíz cajas y selectores relacionales
+        const mensaje = this.esEdicion ? 'Producto actualizado con éxito' : 'Producto guardado exitosamente';
+        this.mostrarMensaje(mensaje);
+        this.cerrarModal(); 
         this.cargarDatos();
       },
       error: (err) => console.error('Error al guardar:', err)
     });
   }
 
-  editarProducto(id: number): void {
-    this.productoService.getById(id).subscribe(producto => {
-      this.nuevoProducto = { ...producto };
-      
-      // 🚀 Envolvemos el cambio de estado en un setTimeout para solucionar el NG0100
-      setTimeout(() => {
-        this.esEdicion = true;
-        this.verModal = true;
-        this.cdr.detectChanges(); // Le avisamos a Angular que dibuje el modal en el próximo ciclo
-      });
-      
+  /* =========================================================
+      MÉTODO CORREGIDO: EDICIÓN COMPLETA DEL MAESTRO
+  ========================================================= */
+  editarProducto(id: number): void {    
+    this.productoService.getById(id).subscribe({
+      next: (productoDto) => {
+        if (productoDto) {
+          // 🔄 Seteamos el estado para que el formulario se configure en modo Edición
+          this.esEdicion = true;
+
+          // 🌟 Mapeamos del DTO plano que nos da la API hacia la entidad Producto del formulario
+          this.nuevoProducto = {
+            productoID: productoDto.productoID,
+            nombre: productoDto.nombre,
+            precio: productoDto.precio,
+            stock: productoDto.stock,
+            stockMinimo: productoDto.stockMinimo,
+            activo: true,
+            fechaModificacion: new Date(),
+            // Extraemos los IDs que van a alimentar los p-select mapeados por "optionValue"
+            marcaID: (productoDto as any).marcaID,        
+            tipoProductoID: (productoDto as any).tipoProductoID, 
+            unidadMedidaID: (productoDto as any).unidadMedidaID  
+          };
+
+          // 🔓 Abrimos el diálogo integral y forzamos renderizado para evitar desajustes en PrimeNG
+          this.verModal = true;
+          this.cdr.detectChanges();
+        }
+      },
+      error: (err) => console.error('❌ Error al recuperar la ficha del producto:', err)
     });
   }
 
+  /* =========================================================
+      AYUDANTES Y TOAST
+  ========================================================= */
   private mostrarMensaje(mensaje: string): void {
     this.mensajeToast = mensaje;
     this.mostrarToast = true;
@@ -106,7 +192,33 @@ export class ProductoListComponent implements OnInit {
     }, 3000);
   }
 
-  // 📦 Inicializador base estructurado de la entidad Producto
+  cerrarModal(): void {
+    this.verModal = false;
+    this.esEdicion = false; 
+    this.nuevoProducto = this.initProducto();
+    this.cdr.detectChanges();
+  }
+
+  transformarTitleCase(valor: string): void {
+    if (!valor) {
+      this.nuevoProducto.nombre = '';
+      return;
+    }
+
+    this.nuevoProducto.nombre = valor
+      .split(' ')
+      .map(palabra => {
+        if (!palabra) return '';
+        return palabra.charAt(0).toUpperCase() + palabra.slice(1).toLowerCase();
+      })
+      .join(' ');
+
+    this.cdr.markForCheck();
+  }
+
+  /* =========================================================
+      INICIALIZADORES DE ENTIDADES
+  ========================================================= */
   private initProducto(): Producto {
     return {
       productoID: 0,
@@ -116,17 +228,9 @@ export class ProductoListComponent implements OnInit {
       stockMinimo: 0,
       activo: true,
       fechaModificacion: new Date(),
-      marcaID: undefined,        // 👈 Inicializado en undefined para resetear los placeholders del HTML
-      tipoProductoID: undefined, // 👈 Inicializado en undefined para resetear los placeholders del HTML
-      unidadMedidaID: undefined  // 👈 Inicializado en undefined para resetear los placeholders del HTML
+      marcaID: undefined,        
+      tipoProductoID: undefined, 
+      unidadMedidaID: undefined  
     };
   }
-
-  // 🧼 Cierra y limpia por completo el formulario relacional de productos
-  cerrarModal(): void {
-  this.verModal = false;
-  this.esEdicion = false; // 👈 Reseteamos el modo edición a falso
-  this.nuevoProducto = this.initProducto();
-  this.cdr.markForCheck();
-}
 }

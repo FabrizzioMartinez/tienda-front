@@ -33,8 +33,15 @@ export class ProductoService {
   }
 
   // 4. Apunta a la nueva ruta /detalle/{id}
-  getById(id: number): Observable<Producto> {
-    return this.http.get<ApiResponse<Producto>>(`${this.apiUrl}/detalle/${id}`)
+  // 🌟 Obtener detalle completo del producto por ID (Ahora retorna ProductoDto)
+  getById(id: number): Observable<ProductoDto> {
+    return this.http.get<ApiResponse<ProductoDto>>(`${this.apiUrl}/detalle/${id}`)
+      .pipe(map(response => response.data));
+  }
+
+  // 🌟 Actualizar únicamente el stock (ruta /actualizar-stock/{id})
+  actualizarStock(id: number, nuevoStock: number): Observable<any> {
+    return this.http.patch<ApiResponse<any>>(`${this.apiUrl}/actualizar-stock/${id}`, nuevoStock)
       .pipe(map(response => response.data));
   }
 }

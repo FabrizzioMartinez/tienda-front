@@ -25,6 +25,7 @@ import { Producto, ProductoBusquedaDto } from '../../../../models/producto.model
 import { DetalleVentaDto, VentaCreateDto } from '../../../../models/venta.model';
 import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
+import { DialogModule } from 'primeng/dialog';
 
 @Component({
   selector: 'app-nueva-venta',
@@ -43,7 +44,9 @@ import { ToastModule } from 'primeng/toast';
     CardModule,
     CheckboxModule,
     ToastModule,
-    RouterModule
+    RouterModule,
+    DialogModule,
+    TableModule
   ],
   templateUrl: './nueva-venta.component.html'
 })
@@ -62,6 +65,9 @@ export class NuevaVentaComponent implements OnInit {
   esBoletaSimple: boolean = true;
   esMixto: boolean = false;
   dineroRecibido: number | null = null;
+  
+  // 🔒 Bandera de control para prevenir el doble clic accidental
+  cargando: boolean = false;
 
   constructor(
     private messageService: MessageService,
@@ -85,6 +91,7 @@ export class NuevaVentaComponent implements OnInit {
     this.esBoletaSimple = true;
     this.esMixto = false;
     this.dineroRecibido = null;
+    this.cargando = false; // Se asegura de desbloquear la interfaz al limpiar
 
     this.nuevaVenta = {
       clienteID: 0, 
@@ -256,13 +263,10 @@ export class NuevaVentaComponent implements OnInit {
       return;
     }
 
-    // Caso 1: Click directo en el checkbox "Pago Mixto"
     if (tipo === 'mixto') {
       if (this.esMixto) {
         this.nuevaVenta.esEfectivo = true;
         this.nuevaVenta.esDigital = true;
-        
-        // 🛠️ Corrección: Asignamos el total inicial al efectivo y 0 al digital para que no rompa balances
         this.nuevaVenta.montoEfectivo = this.nuevaVenta.total;
         this.nuevaVenta.montoDigital = 0;
       } else {
@@ -276,7 +280,6 @@ export class NuevaVentaComponent implements OnInit {
       return;
     }
 
-    // Caso 2: Click directo en el checkbox "Efectivo"
     if (tipo === 'efectivo') {
       this.esMixto = false;
       if (this.nuevaVenta.esEfectivo) {
@@ -291,7 +294,6 @@ export class NuevaVentaComponent implements OnInit {
       return;
     }
 
-    // Caso 3: Click directo en el checkbox "Digital"
     if (tipo === 'digital') {
       this.esMixto = false;
       this.dineroRecibido = null;
@@ -306,7 +308,6 @@ export class NuevaVentaComponent implements OnInit {
       return;
     }
 
-    // Detección automática en tiempo real de diferencia cruzada (Modo Mixto)
     if (this.esMixto) {
       if (tipo === 'montoEfectivo') {
         const efectivo = this.nuevaVenta.montoEfectivo ?? 0;
@@ -326,6 +327,9 @@ export class NuevaVentaComponent implements OnInit {
   }
 
   registrarVenta(): void {
+    // 1. Detener ejecución inmediata si ya se encuentra procesando la petición
+    if (this.cargando) return;
+
     if (this.nuevaVenta.detalles.length === 0) {
       this.messageService.add({ 
         severity: 'warn', 
@@ -335,7 +339,6 @@ export class NuevaVentaComponent implements OnInit {
       return;
     }
 
-    // 🔥 Inyección de DNI Genérico de forma automática si es Boleta Simple
     if (this.esBoletaSimple) {
       this.nuevaVenta.numeroComprobante = '00000000';
     }
@@ -353,6 +356,10 @@ export class NuevaVentaComponent implements OnInit {
         return;
       }
     }
+
+    // 2. Bloquear controlador e indicar a OnPush que actualice la vista (Button disabled/loading)
+    this.cargando = true;
+    this.cdr.markForCheck();
 
     this.ventaService.registrar(this.nuevaVenta).subscribe({
       next: () => {
@@ -375,6 +382,10 @@ export class NuevaVentaComponent implements OnInit {
           summary: 'Error', 
           detail: 'No se pudo registrar la venta.' 
         });
+        
+        // 3. Desbloquear estado para permitir corregir o reintentar en caso de fallo del servidor
+        this.cargando = false;
+        this.cdr.markForCheck();
       }
     });
   }

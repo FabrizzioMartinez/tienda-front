@@ -44,26 +44,41 @@ export class VentaService {
     .pipe(map(response => response.data));
 }
 
-getVentasFiltro(fecha: Date | null, productoId?: number | null): Observable<VentaDto[]> {
+getVentasFiltro(fecha: Date | null, fechaHasta: Date | null, productoId?: number | null): Observable<VentaDto[]> {
   let params = new HttpParams();
 
+  // 🕒 Formateador regional para asegurar que la fecha mantenga la zona horaria de Perú
+  const formateadorPeru = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'America/Lima',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  });
+
+  // 1. Seteamos Fecha Desde (fecha)
   if (fecha) {
-    const fechaPeru = new Intl.DateTimeFormat('en-CA', {
-      timeZone: 'America/Lima',
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit'
-    }).format(fecha);
-    
-    params = params.set('fecha', fechaPeru);
+    const fechaInicioPeru = formateadorPeru.format(fecha);
+    params = params.set('fecha', fechaInicioPeru);
   }
 
+  // 2. 📅 NUEVO: Seteamos Fecha Hasta (fechaHasta)
+  if (fechaHasta) {
+    const fechaFinPeru = formateadorPeru.format(fechaHasta);
+    params = params.set('fechaHasta', fechaFinPeru);
+  }
+
+  // 3. Seteamos el ID del Producto
   if (productoId && productoId > 0) {
     params = params.set('productoId', productoId.toString());
   }
 
-  return this.http
-    .get<ApiResponse<VentaDto[]>>(`${this.apiUrl}/filtrar`, { params })
-    .pipe(map(response => response.data));
+  // 🚀 CRÍTICO: Agregado el retorno del HTTP GET mapeando la estructura de tu API C# ({ data: ... })
+  return this.http.get<{ data: VentaDto[] }>(`${this.apiUrl}/filtrar`, { params })
+    .pipe(
+      map(response => response.data || [])
+    );
+}
+anular(id: number): Observable<any> {
+  return this.http.delete(`${this.apiUrl}/anular/${id}`);
 }
 }

@@ -28,6 +28,9 @@ import { RippleModule } from 'primeng/ripple';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { MessageService } from 'primeng/api';
+import { InputNumberModule } from 'primeng/inputnumber';
+import { InputTextModule } from 'primeng/inputtext';
+import { Toast } from "primeng/toast";
 
 @Component({
   selector: 'app-dashboard',
@@ -44,7 +47,10 @@ import { MessageService } from 'primeng/api';
     DatePickerModule,
     RippleModule,
     ButtonModule,
-    AutoCompleteModule
+    AutoCompleteModule,
+    InputNumberModule,
+    InputTextModule,
+    Toast
   ],
   animations: [
     trigger('rowExpansionTrigger', [
@@ -86,11 +92,19 @@ export class DashboardComponent implements OnInit {
   productoSeleccionado: Producto | null = null;
 
   /* =========================================================
-      MODAL REPORTE
+      MODALES Y ENTRADAS DE TRABAJO
   ========================================================= */
   verModalReporte = false;
+  stockOriginal: number = 0;
   listaVentasFiltradas: VentaDto[] = [];
   enviarSoloId: boolean = false;
+  
+  // Controladores para el Modal Pequeño de Actualización de Stock
+  verModalStock: boolean = false;
+  nuevoProducto: ProductoDto = this.initProducto();
+  
+  // Propiedad estática para enlazar el valor formateado sin generar bucles en el HTML
+  nombreProductoFormateado: string = '';
 
   /* =========================================================
       EXPANSIÓN DE FILAS
@@ -102,8 +116,12 @@ export class DashboardComponent implements OnInit {
   ========================================================= */
   filtroReporte = {
     fecha: '',
+    fechaHasta: '', // 📅 Sincronizado para el rango de fechas del p-datepicker
     productoId: null as number | null
   };
+
+  // 🔒 Bandera para el control de doble clic concurrente en las acciones del dashboard
+  cargando: boolean = false;
 
   /* =========================================================
       CONSTRUCTOR
@@ -127,21 +145,14 @@ export class DashboardComponent implements OnInit {
   /* =========================================================
       MÉTODOS AYUDANTES PARA FECHA PERÚ (EVITA DESFASES)
   ========================================================= */
-
-  /**
-   * Obtiene un objeto Date nativo seteado exactamente en la hora de Perú
-   */
   private getJavaDatePeru(): Date {
     const stringPeru = new Date().toLocaleString('en-US', { timeZone: 'America/Lima' });
     return new Date(stringPeru);
   }
 
-  /**
-   * Retorna la fecha de Perú formateada directamente en "YYYY-MM-DD"
-   */
   private getFechaStringPeru(): string {
     const opciones = { timeZone: 'America/Lima', year: 'numeric', month: '2-digit', day: '2-digit' } as const;
-    const formateador = new Intl.DateTimeFormat('fr-CA', opciones); // 'fr-CA' entrega YYYY-MM-DD de forma nativa
+    const formateador = new Intl.DateTimeFormat('fr-CA', opciones); 
     return formateador.format(new Date());
   }
 
@@ -173,7 +184,6 @@ export class DashboardComponent implements OnInit {
       CARGAR RESUMEN
   ========================================================= */
   cargarResumen(): void {
-    // PRODUCTOS
     this.productoService.getProductos().subscribe({
       next: (lista) => {
         this.totalProductos = lista.length;
@@ -186,7 +196,6 @@ export class DashboardComponent implements OnInit {
       }
     });
 
-    // MARCAS
     this.marcaService.getActivas().subscribe({
       next: (marcas) => {
         this.totalMarcas = marcas.length;
@@ -197,7 +206,6 @@ export class DashboardComponent implements OnInit {
       }
     });
 
-    // VENTAS DEL DÍA
     this.cargarVentasDelDia();
   }
 
@@ -215,17 +223,13 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  /* =========================================================
-      VENTAS DEL DÍA (USANDO ZONA HORARIA LIMA)
-  ========================================================= */
   cargarVentasDelDia(): void {
-    // Corregido: Ya no usa la hora local del dispositivo del cliente
     const hoyPeru = this.getJavaDatePeru();
 
     this.ventaService
       .getPorFecha(hoyPeru)
       .subscribe({
-        next: (ventas) => {
+        next: (ventas: VentaDto[]) => {
           this.ventasDia = ventas.reduce(
             (acumulado, venta) => acumulado + venta.total,
             0
@@ -239,17 +243,27 @@ export class DashboardComponent implements OnInit {
   }
 
   /* =========================================================
-      ABRIR MODAL (SETEA FILTRO EN FECHA PERÚ)
+      MODAL REPORTE
   ========================================================= */
   abrirModalReporte(): void {
-    // Corregido: Ya no usa .toISOString() que causaba saltos de día no deseados
-    this.filtroReporte.fecha = this.getFechaStringPeru();
+    const hoy = this.getFechaStringPeru();
+    
+    // 1. Inicializamos el filtro con el rango cerrado para el día de hoy
+    this.filtroReporte.fecha = hoy;
+    this.filtroReporte.fechaHasta = hoy; 
     this.filtroReporte.productoId = null;
     this.listaVentasFiltradas = [];
+    
+    // 2. Volvemos visible el modal en el DOM
     this.verModalReporte = true;
+
+    // 3. 🌟 SOLUCIÓN: Llamamos inmediatamente a generarReporte()
+    // Como las propiedades del filtro ya tienen 'hoy', la función parseará y enviará las dos fechas idénticas al backend
+    this.generarReporte();
+
+    // 4. Forzamos la detección de cambios para renderizar la grilla y el foco del botón
     this.cdr.markForCheck();
 
-    // Evitar foco automático en el calendario
     setTimeout(() => {
       if (this.btnCancelar && this.btnCancelar.nativeElement) {
         this.btnCancelar.nativeElement.focus();
@@ -257,9 +271,6 @@ export class DashboardComponent implements OnInit {
     }, 250);
   }
 
-  /* =========================================================
-      CERRAR MODAL
-  ========================================================= */
   cerrarModalReporte(): void {
     this.verModalReporte = false;
     this.cdr.markForCheck();
@@ -268,95 +279,235 @@ export class DashboardComponent implements OnInit {
   }
 
   buscarProductos(event: any): void {
-      const query = (event.query ?? '').trim();
-      
-      if (query.length < 3) {
-        this.sugerenciasProductos = [];
-        return;
-      }
-  
-      this.productoService.buscarProductos(query).subscribe({
-        next: (res: any) => {
-          const datos: ProductoBusquedaDto[] = res?.$values ?? res?.data ?? res ?? [];
-          this.sugerenciasProductos = datos.slice(0, 5).map(p => {
-            const tamanoTexto = p.tamaño ? ` - ${p.tamaño}` : '';
-            const baseNombre = `${p.nombre}${tamanoTexto}`;
-  
-            return {
-              ...p,
-              nombreMostrar: p.stock === 0 ? `${baseNombre} (Sin Stock)` : baseNombre
-            };
-          });
-          this.cdr.markForCheck();
-        },
-        error: (err) => {
-          console.error('Error al buscar productos:', err);
-          this.sugerenciasProductos = [];
-        }
-      });
+    const query = (event.query ?? '').trim();
+    
+    if (query.length < 3) {
+      this.sugerenciasProductos = [];
+      return;
     }
+
+    this.productoService.buscarProductos(query).subscribe({
+      next: (res: any) => {
+        const datos: ProductoBusquedaDto[] = res?.$values ?? res?.data ?? res ?? [];
+        this.sugerenciasProductos = datos.slice(0, 5).map(p => {
+          const tamanoTexto = p.tamaño ? ` - ${p.tamaño}` : '';
+          const baseNombre = `${p.nombre}${tamanoTexto}`;
+
+          return {
+            ...p,
+            nombreMostrar: p.stock === 0 ? `${baseNombre} (Sin Stock)` : baseNombre
+          };
+        });
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        console.error('Error al buscar productos:', err);
+        this.sugerenciasProductos = [];
+      }
+    });
+  }
 
   /* =========================================================
       GENERAR REPORTE
   ========================================================= */
-
   cambiarHistorico(): void {
     if (this.enviarSoloId) {
-      this.filtroReporte.fecha = ''; // Cambiado de null a cadena vacía
+      this.filtroReporte.fecha = ''; 
+      this.filtroReporte.fechaHasta = ''; // Resetea ambas fechas al buscar por ID puro
     }
   }
-  generarReporte(): void {
-    
 
+  generarReporte(): void {
     const parametrosBackend = {
       fechaStr: this.filtroReporte.fecha,
-      // Extraemos el ID directamente del objeto seleccionado por el AutoComplete
+      fechaHastaStr: this.filtroReporte.fechaHasta,
       productoId: this.productoSeleccionado && this.productoSeleccionado.productoID > 0
         ? Number(this.productoSeleccionado.productoID)
         : null
     };
 
-    // REGLA NUEVA: Si el check "enviarSoloId" está activo, limpiamos la fecha (la mandamos null)
-    // De lo contrario, calculamos la fecha normal sin desfases.
-    let fechaDate: Date | null = null;
+    let fechaDesdeDate: Date | null = null;
+    let fechaHastaDate: Date | null = null;
     
+    // Parseo seguro de rango de fechas si el switch "Solo producto" no está activo
     if (!this.enviarSoloId) {
-      const [year, month, day] = parametrosBackend.fechaStr.split('-').map(Number);
-      fechaDate = new Date(year, month - 1, day, 0, 0, 0);
-    } else {
-      console.log('Búsqueda por ID puro: Se limpia el filtro de fecha.');
+      if (parametrosBackend.fechaStr) {
+        const [y1, m1, d1] = parametrosBackend.fechaStr.split('-').map(Number);
+        fechaDesdeDate = new Date(y1, m1 - 1, d1, 0, 0, 0);
+      }
+      if (parametrosBackend.fechaHastaStr) {
+        const [y2, m2, d2] = parametrosBackend.fechaHastaStr.split('-').map(Number);
+        fechaHastaDate = new Date(y2, m2 - 1, d2, 23, 59, 59); // Seteado al último segundo del rango
+      }
     }
 
-    // Enviamos fechaDate (que puede ser Date o null) junto al ID del producto
+    // 🌟 CORREGIDO: Ahora pasamos las tres variables en el orden exacto que espera tu servicio HTTP
     this.ventaService
-      .getVentasFiltro(fechaDate, parametrosBackend.productoId)
+      .getVentasFiltro(fechaDesdeDate, fechaHastaDate, parametrosBackend.productoId) 
       .subscribe({
         next: (ventasDtoLista) => {
           this.listaVentasFiltradas = ventasDtoLista || [];
-          this.expandedRows = {}; // Reset de la fila expandida
-          this.cdr.detectChanges(); // Forzamos actualización de vista con OnPush
+          this.expandedRows = {}; 
+          this.cdr.detectChanges(); // Fuerza la actualización para pintar la grilla de comprobantes
         },
         error: (err) => {
-          console.error('Error al recuperar ventas:', err);
+          console.error('❌ Error al recuperar las ventas filtradas:', err);
         }
       });
   }
+
+  /* =========================================================
+      ACCIONES: ANULAR VENTA
+  ========================================================= */
+  anularVenta(ventaId: number): void {
+    if (!ventaId || this.cargando) return;
+
+    this.cargando = true;
+    this.cdr.markForCheck();
+
+    this.ventaService.anular(ventaId).subscribe({
+      next: () => {
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Anulación Exitosa',
+          detail: 'La venta ha sido anulada y el stock fue restaurado.'
+        });
+        
+        this.cargando = false;
+        this.generarReporte();
+        this.cargarResumen();
+      },
+      error: (err) => {
+        console.error('Error al anular la venta:', err);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: err?.error?.mensaje || 'No se pudo procesar la anulación de la venta.'
+        });
+        
+        this.cargando = false;
+        this.cdr.markForCheck();
+      }
+    });
+  }
+
+  /* =========================================================
+      CÁLCULOS DEL REPORTE
+  ========================================================= */
   calcularTotalEfectivo(): number {
-  if (!this.listaVentasFiltradas) return 0;
-  return this.listaVentasFiltradas
-    .filter(v => v.esEfectivo)
-    .reduce((sum, v) => sum + (v.montoEfectivo || v.total || 0), 0);
-}
+    if (!this.listaVentasFiltradas) return 0;
+    return this.listaVentasFiltradas
+      .filter(v => v.esEfectivo)
+      .reduce((sum, v) => sum + (v.montoEfectivo || v.total || 0), 0);
+  }
 
-calcularTotalDigital(): number {
-  if (!this.listaVentasFiltradas) return 0;
-  return this.listaVentasFiltradas
-    .filter(v => v.esDigital)
-    .reduce((sum, v) => sum + (v.montoDigital || v.total || 0), 0);
-}
+  calcularTotalDigital(): number {
+    if (!this.listaVentasFiltradas) return 0;
+    return this.listaVentasFiltradas
+      .filter(v => v.esDigital)
+      .reduce((sum, v) => sum + (v.montoDigital || v.total || 0), 0);
+  }
 
-calcularTotalGeneral(): number {
-  if (!this.listaVentasFiltradas) return 0;
-  return this.listaVentasFiltradas.reduce((sum, v) => sum + (v.total || 0), 0);
-}
+  calcularTotalGeneral(): number {
+    if (!this.listaVentasFiltradas) return 0;
+    return this.listaVentasFiltradas.reduce((sum, v) => sum + (v.total || 0), 0);
+  }
+
+  /* =========================================================
+      ACTUALIZACIÓN RÁPIDA DE STOCK (NUEVO FORMULARIO)
+  ========================================================= */
+  editarProducto(id: number): void {    
+    this.productoService.getById(id).subscribe({
+      next: (producto) => {
+        if (producto) {
+          this.stockOriginal = producto.stock ?? 0;
+          
+          this.nuevoProducto = {
+            ...(producto as unknown as ProductoDto),
+            stockMinimo: producto.stockMinimo ?? 0,
+            nombreMarca: (producto as any).nombreMarca || '',
+            nombreTipo: (producto as any).nombreTipo || '',
+            tipoProducto: (producto as any).tipoProducto || '',
+            unidadMedida: (producto as any).unidadMedida || '',
+            abreviatura: (producto as any).abreviatura || ''
+          }; 
+          
+          this.nuevoProducto.stock = 0; 
+
+          // Seteamos la cadena de texto limpia una sola vez para inyectar al ngModel del HTML
+          this.nombreProductoFormateado = this.nuevoProducto.nombre + 
+            (this.nuevoProducto.abreviatura ? ' - ' + this.nuevoProducto.abreviatura : '');
+
+          this.verModalStock = true;
+          this.cdr.detectChanges();
+        }
+      },
+      error: (err) => console.error('❌ Error al recuperar el detalle:', err)
+    });
+  }
+
+  guardarStockRapido(): void {    
+    const cantidadAIngresar = this.nuevoProducto.stock ?? 0;  
+    
+    if (cantidadAIngresar <= 0) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Acción Inválida',
+        detail: 'La cantidad a adicionar debe ser mayor a cero.'
+      });
+      return;
+    }   
+
+    const stockFinalCalculado = this.stockOriginal + cantidadAIngresar;  
+    const productoId = this.nuevoProducto.productoID || (this.nuevoProducto as any).id;  
+
+    this.productoService.actualizarStock(productoId, stockFinalCalculado).subscribe({
+      next: () => {
+        this.messageService.add({
+          severity: 'success',
+          summary: '¡Operación Exitosa!',
+          detail: `El inventario se actualizó correctamente. Se agregaron +${cantidadAIngresar} unidades. Total: ${stockFinalCalculado}`,
+          life: 4000
+        });
+        
+        this.cerrarModalStock();
+        this.cargarResumen(); 
+      },
+      error: (err) => {
+        console.error('❌ Error al actualizar parcialmente el stock:', err);
+        
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error de Servidor',
+          detail: 'No se pudo guardar la nueva cantidad en el sistema. Inténtelo nuevamente.',
+          life: 5000
+        });
+      }
+    });
+  }
+
+  cerrarModalStock(): void {
+    this.verModalStock = false;
+    this.nuevoProducto = this.initProducto();
+    this.nombreProductoFormateado = '';
+    this.cdr.detectChanges();
+  }
+
+  /* =========================================================
+      INITIALIZADORES DE CONTROL
+  ========================================================= */
+  initProducto(): ProductoDto {
+    return {
+      productoID: 0,
+      nombre: '',
+      stock: 0,
+      precio: 0,
+      stockMinimo: 0, 
+      nombreMarca: '',
+      nombreTipo: '',
+      tipoProducto: '',
+      unidadMedida: '',
+      abreviatura: ''
+    };
+  }
 }

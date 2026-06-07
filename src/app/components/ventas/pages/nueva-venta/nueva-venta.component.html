@@ -299,13 +299,13 @@
           </div>
         </div>
 
-        <button
-          pButton
+        <p-button
           label="Registrar Venta"
           icon="pi pi-check"
-          class="btn-save w-full mt-4"
-          (click)="registrarVenta()">
-        </button>
+          styleClass="btn-save w-full mt-4"
+          [loading]="cargando"
+          (onClick)="registrarVenta()">
+        </p-button>
 
       </div>
     </div>
