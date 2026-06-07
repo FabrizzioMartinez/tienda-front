@@ -10,4 +10,8 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
-node_modules
+
+### Node / Angular (Crucial)
+node_modules/
+.angular/
+dist/
