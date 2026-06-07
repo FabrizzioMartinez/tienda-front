@@ -31,6 +31,7 @@ import { MessageService } from 'primeng/api';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { Toast } from "primeng/toast";
+import { jsPDF } from 'jspdf';
 
 @Component({
   selector: 'app-dashboard',
@@ -390,6 +391,192 @@ export class DashboardComponent implements OnInit {
       }
     });
   }
+
+  descargarBoleta(ventaId: number): void {
+  if (!ventaId || this.cargando) return;
+
+  this.cargando = true;
+  this.cdr.markForCheck();
+
+  this.ventaService.getVentaPorId(ventaId).subscribe({
+    next: (venta: VentaDto) => {
+      if (!venta) {
+        throw new Error('La API respondió con datos vacíos.');
+      }
+
+      // 1. Cálculo Dinámico de Altura (Añadimos espacio para las líneas de IGV y Subtotal)
+      const anchoTicket = 80;
+      const altoBase = 105; // Incrementado ligeramente para el desglose fiscal
+      const altoPorProducto = 10; 
+      const altoTotal = altoBase + (venta.detalles.length * altoPorProducto);
+
+      const doc = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: [anchoTicket, altoTotal]
+      });
+
+      let y = 12; 
+      const margenX = 6;
+      const derechaX = anchoTicket - margenX;
+
+      // 2. ENCABEZADO: VersLun Store
+      doc.setFont('Helvetica', 'bold');
+      doc.setFontSize(16);
+      doc.setTextColor(15, 23, 42); 
+      doc.text('VersLun Store', anchoTicket / 2, y, { align: 'center' });
+      
+      y += 5;
+      doc.setFont('Helvetica', 'normal');
+      doc.setFontSize(9);
+      doc.setTextColor(100, 116, 139); 
+      doc.text('--- COMPROBANTE ELECTRÓNICO ---', anchoTicket / 2, y, { align: 'center' });
+      
+      y += 5;
+      doc.setFont('Helvetica', 'bold');
+      doc.setFontSize(11);
+      doc.setTextColor(15, 23, 42);
+      doc.text(`${venta.tipoComprobante.toUpperCase()} N° ${venta.numeroComprobante}`, anchoTicket / 2, y, { align: 'center' });
+
+      y += 6;
+      // 3. BLOQUE DE INFORMACIÓN
+      doc.setDrawColor(226, 232, 240); 
+      doc.setLineWidth(0.3);
+      doc.line(margenX, y, derechaX, y); 
+
+      y += 5;
+      doc.setFont('Helvetica', 'normal');
+      doc.setFontSize(8.5);
+      doc.setTextColor(51, 65, 85); 
+      
+      const fechaFormateada = new Date(venta.fechaRegistro).toLocaleString('es-PE', { timeZone: 'America/Lima' });
+      const clienteFinal = (!venta.nombreCliente || venta.nombreCliente.toLowerCase() === 'undefined') 
+        ? 'Público General' 
+        : venta.nombreCliente;
+
+      doc.text(`Fecha de Emisión : ${fechaFormateada}`, margenX, y);
+      y += 4.5;
+      doc.text(`Cliente          : ${clienteFinal}`, margenX, y);
+
+      y += 4;
+      doc.line(margenX, y, derechaX, y); 
+      
+      y += 5;
+      // 4. CABECERA DE LA TABLA
+      doc.setFont('Helvetica', 'bold');
+      doc.setFontSize(8);
+      doc.setTextColor(100, 116, 139); 
+      
+      doc.text('DESCRIPCIÓN', margenX, y);
+      doc.text('CANT', margenX + 38, y, { align: 'center' });
+      doc.text('P.U.', margenX + 50, y, { align: 'right' });
+      doc.text('TOTAL', derechaX, y, { align: 'right' });
+
+      y += 2.5;
+      doc.line(margenX, y, derechaX, y); 
+
+      // 5. LISTADO DE PRODUCTOS
+      doc.setFont('Helvetica', 'normal');
+      doc.setFontSize(8.5);
+      
+      venta.detalles.forEach(d => {
+        y += 5.5;
+        doc.setTextColor(15, 23, 42); 
+        
+        let nombreProducto = d.nombreProducto;
+        if (nombreProducto.length > 20) {
+          nombreProducto = nombreProducto.substring(0, 18) + '..';
+        }
+        
+        doc.text(nombreProducto, margenX, y);
+        
+        doc.setTextColor(71, 85, 105); 
+        doc.text(d.cantidad.toString(), margenX + 38, y, { align: 'center' });
+        doc.text(`S/ ${d.precioUnitario.toFixed(2)}`, margenX + 50, y, { align: 'right' });
+        
+        doc.setTextColor(15, 23, 42); 
+        doc.text(`S/ ${d.subtotal.toFixed(2)}`, derechaX, y, { align: 'right' });
+      });
+
+      y += 5;
+      doc.setLineDashPattern([1.5, 1.5], 0);
+      doc.setDrawColor(148, 163, 184); 
+      doc.line(margenX, y, derechaX, y);
+      
+      y += 6;
+      // 6. 🇵🇪 SECCIÓN FISCAL: DESGLOSE DE IGV (18%)
+      doc.setLineDashPattern([], 0); 
+      doc.setFont('Helvetica', 'normal');
+      doc.setFontSize(8.5);
+      doc.setTextColor(71, 85, 105);
+
+      // Fórmulas de desglose peruano
+      const gravada = venta.total / 1.18;
+      const igv = venta.total - gravada;
+
+      doc.text('Op. Gravada:', margenX, y);
+      doc.text(`S/ ${gravada.toFixed(2)}`, derechaX, y, { align: 'right' });
+      
+      y += 4.5;
+      doc.text('IGV (18%):', margenX, y);
+      doc.text(`S/ ${igv.toFixed(2)}`, derechaX, y, { align: 'right' });
+      
+      y += 5.5;
+      doc.line(margenX, y, derechaX, y); // Separador previo al total
+
+      y += 5;
+      // 7. TOTAL NETO DESTACADO
+      doc.setFont('Helvetica', 'bold');
+      doc.setFontSize(12);
+      doc.setTextColor(15, 23, 42);
+      doc.text('TOTAL GENERAL:', margenX, y);
+      doc.text(`S/ ${venta.total.toFixed(2)}`, derechaX, y, { align: 'right' });
+
+      y += 6;
+      // 8. MÉTODOS DE PAGO UTILIZADOS
+      doc.setFont('Helvetica', 'normal');
+      doc.setFontSize(8);
+      doc.setTextColor(100, 116, 139);
+      if (venta.esEfectivo) {
+        doc.text(`Pago en Efectivo: S/ ${venta.montoEfectivo?.toFixed(2)}`, margenX, y);
+        y += 4;
+      }
+      if (venta.esDigital) {
+        doc.text(`Pago Digital: S/ ${venta.montoDigital?.toFixed(2)}`, margenX, y);
+        y += 4;
+      }
+
+      // 9. PIE DE PÁGINA
+      y += 10;
+      doc.setFont('Helvetica', 'normal');
+      doc.setFontSize(8.5);
+      doc.setTextColor(148, 163, 184); 
+      doc.text('¡Gracias por su preferencia!', anchoTicket / 2, y, { align: 'center' });
+
+      // 🚀 Exportar PDF original
+      doc.save(`Boleta_${venta.numeroComprobante || ventaId}.pdf`);
+
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Descarga Completada',
+        detail: 'Boleta con desglose de IGV (18%) generada con éxito.'
+      });
+
+      this.cargando = false;
+      this.cdr.markForCheck();
+    },
+    error: (err) => {
+      console.error('❌ Error al generar el PDF con IGV:', err);
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'No se pudo procesar el desglose fiscal.'
+      });
+      this.cargando = false;
+      this.cdr.markForCheck();
+    }
+  });
+}
 
   /* =========================================================
       CÁLCULOS DEL REPORTE

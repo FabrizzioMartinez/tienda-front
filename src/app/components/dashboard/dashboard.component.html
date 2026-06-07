@@ -326,248 +326,231 @@
 
   <!-- Grilla de Resultados de Ventas -->
   <div style="margin-bottom: 20px;">
-    <p-table
-      #dt
-      [value]="listaVentasFiltradas"
-      dataKey="ventaID"
-      [expandedRowKeys]="expandedRows"
-      responsiveLayout="stack"
-      breakpoint="768px"
-      styleClass="p-datatable-sm premium-nested-table p-datatable-striped"
-      [paginator]="true"
-      [rows]="5"
-      [rowsPerPageOptions]="[5, 10, 20]"
-      currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} ventas"
-      [showCurrentPageReport]="true"
-      [style]="{ 'width': '100%' }">
+  <p-table
+    #dt
+    [value]="listaVentasFiltradas"
+    dataKey="ventaID"
+    [expandedRowKeys]="expandedRows"
+    responsiveLayout="stack"
+    breakpoint="768px"
+    styleClass="p-datatable-sm premium-nested-table p-datatable-striped"
+    [paginator]="true"
+    [rows]="5"
+    [rowsPerPageOptions]="[5, 10, 20]"
+    currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} ventas"
+    [showCurrentPageReport]="true"
+    [style]="{ 'width': '100%' }">
 
-      <ng-template pTemplate="caption">
-        <div style="display: flex; justify-content: flex-start; align-items: center; padding-bottom: 4px;">
-          <div style="position: relative; width: 100%; max-width: 320px;">
-            <i class="pi pi-search" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 0.9rem;"></i>
-            <input 
-              id="buscarFiltroGlobal"
-              type="text" 
-              pInputText 
-              (input)="dt.filterGlobal($any($event.target).value, 'contains')" 
-              placeholder="Buscar por cliente, N°..." 
-              style="width: 100%; padding-left: 36px; height: 38px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 0.85rem; background: #ffffff;" />
+    <ng-template pTemplate="caption">
+      <div style="display: flex; justify-content: flex-start; align-items: center; padding-bottom: 4px;">
+        <div style="position: relative; width: 100%; max-width: 320px;">
+          <i class="pi pi-search" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 0.9rem;"></i>
+          <input 
+            id="buscarFiltroGlobal"
+            type="text" 
+            pInputText 
+            (input)="dt.filterGlobal($any($event.target).value, 'contains')" 
+            placeholder="Buscar por cliente, N°..." 
+            style="width: 100%; padding-left: 36px; height: 38px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 0.85rem; background: #ffffff;" />
+        </div>
+      </div>
+    </ng-template>
+
+    <ng-template pTemplate="header">
+      <tr>
+        <th style="width: 3rem; background: #f8fafc; border-bottom: 1px solid #e2e8f0;"></th>
+        <th pSortableColumn="tipoComprobante" style="padding: 14px; background: #f8fafc; color: #64748b; font-size: 0.85rem; font-weight: 600; border-bottom: 1px solid #e2e8f0;">
+          Comprobante <p-sortIcon field="tipoComprobante"></p-sortIcon>
+        </th>
+        <th pSortableColumn="clienteNombre" style="padding: 14px; background: #f8fafc; color: #64748b; font-size: 0.85rem; font-weight: 600; border-bottom: 1px solid #e2e8f0;">
+          Cliente <p-sortIcon field="clienteNombre"></p-sortIcon>
+        </th>
+        <th style="background: #f8fafc; color: #64748b; font-size: 0.85rem; font-weight: 600; border-bottom: 1px solid #e2e8f0; text-align: center; width: 150px;">
+          Método de Pago
+        </th>
+        <th pSortableColumn="total" style="text-align: right; padding: 14px; background: #f8fafc; color: #64748b; font-size: 0.85rem; font-weight: 600; border-bottom: 1px solid #e2e8f0; width: 120px;">
+          Total <p-sortIcon field="total"></p-sortIcon>
+        </th>
+        <th style="background: #f8fafc; color: #64748b; font-size: 0.85rem; font-weight: 600; border-bottom: 1px solid #e2e8f0; text-align: center; width: 80px;">
+          Boleta
+        </th>
+        <th style="background: #f8fafc; color: #64748b; font-size: 0.85rem; font-weight: 600; border-bottom: 1px solid #e2e8f0; text-align: center; width: 80px;">
+          Anular
+        </th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-venta>
+      <tr [style.background]="expandedRows[venta.ventaID] ? '#f8fafc' : 'white'" style="border-bottom: 1px solid #f1f5f9; transition: background 0.2s ease;">
+        
+        <td style="padding: 14px; text-align: center; vertical-align: middle;">
+          <span class="p-column-title block md:hidden" style="font-weight: 600; color: #64748b; font-size: 0.85rem; margin-bottom: 4px;">Detalle</span>
+          <button
+            type="button"
+            pButton
+            pRipple
+            (click)="toggleRow(venta)"
+            [icon]="expandedRows[venta.ventaID] ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"
+            class="p-button-text p-button-rounded p-button-plain"
+            style="width: 28px; height: 28px; color: #94a3b8;">
+          </button>
+        </td>
+
+        <td style="padding: 14px; vertical-align: middle; font-weight: 600; color: #334155; word-break: break-word;">
+          <span class="p-column-title block md:hidden" style="font-weight: 600; color: #64748b; font-size: 0.85rem; margin-bottom: 4px;">Comprobante</span>
+          {{ venta.tipoComprobante }} - {{ venta.numeroComprobante }}
+        </td>
+
+        <td style="padding: 14px; vertical-align: middle; color: #475569;">
+          <span class="p-column-title block md:hidden" style="font-weight: 600; color: #64748b; font-size: 0.85rem; margin-bottom: 4px;">Cliente</span>
+          {{ venta.clienteID === 1 ? 'Sin Cliente' : venta.clienteNombre }}
+        </td>
+        
+        <td style="padding: 14px; text-align: center; vertical-align: middle;">
+          <span class="p-column-title block md:hidden" style="font-weight: 600; color: #64748b; font-size: 0.85rem; margin-bottom: 4px;">Método de Pago</span>
+          <div style="display: inline-flex; gap: 4px; justify-content: center; flex-wrap: wrap;">
+            <span *ngIf="venta.esCredito" style="background-color: #fef2f2; color: #991b1b; font-size: 0.72rem; font-weight: 600; padding: 4px 8px; border-radius: 6px; white-space: nowrap;">⏳ Crédito</span>
+            <span *ngIf="!venta.esCredito && venta.esEfectivo && venta.esDigital" style="background-color: #fef3c7; color: #92400e; font-size: 0.72rem; font-weight: 600; padding: 4px 8px; border-radius: 6px; white-space: nowrap;">🔄 Mixto</span>
+            <span *ngIf="!venta.esCredito && venta.esEfectivo && !venta.esDigital" style="background-color: #dcfce7; color: #166534; font-size: 0.72rem; font-weight: 600; padding: 4px 8px; border-radius: 6px; white-space: nowrap;">💵 Efectivo</span>
+            <span *ngIf="!venta.esCredito && venta.esDigital && !venta.esEfectivo" style="background-color: #e0f2fe; color: #0369a1; font-size: 0.72rem; font-weight: 600; padding: 4px 8px; border-radius: 6px; white-space: nowrap;">📱 Digital</span>
           </div>
-        </div>
-      </ng-template>
+        </td>
 
-      <ng-template pTemplate="header">
-        <tr>
-          <th style="width: 3rem; background: #f8fafc; border-bottom: 1px solid #e2e8f0;"></th>
-          <th pSortableColumn="tipoComprobante" style="padding: 14px; background: #f8fafc; color: #64748b; font-size: 0.85rem; font-weight: 600; border-bottom: 1px solid #e2e8f0;">
-            Comprobante <p-sortIcon field="tipoComprobante"></p-sortIcon>
-          </th>
-          <th pSortableColumn="clienteNombre" style="padding: 14px; background: #f8fafc; color: #64748b; font-size: 0.85rem; font-weight: 600; border-bottom: 1px solid #e2e8f0;">
-            Cliente <p-sortIcon field="clienteNombre"></p-sortIcon>
-          </th>
-          <th style="background: #f8fafc; color: #64748b; font-size: 0.85rem; font-weight: 600; border-bottom: 1px solid #e2e8f0; text-align: center; width: 160px;">
-            Método de Pago
-          </th>
-          <th pSortableColumn="total" style="text-align: right; padding: 14px; background: #f8fafc; color: #64748b; font-size: 0.85rem; font-weight: 600; border-bottom: 1px solid #e2e8f0;">
-            Total <p-sortIcon field="total"></p-sortIcon>
-          </th>
-          <th style="background: #f8fafc; color: #64748b; font-size: 0.85rem; font-weight: 600; border-bottom: 1px solid #e2e8f0; text-align: center; width: 80px;">
-            Acción
-          </th>
-        </tr>
-      </ng-template>
+        <td style="padding: 14px; text-align: right; vertical-align: middle; font-weight: 700; color: #0f172a;">
+          <span class="p-column-title block md:hidden" style="font-weight: 600; color: #64748b; font-size: 0.85rem; margin-bottom: 4px;">Total</span>
+          S/ {{ venta.total | number:'1.2-2' }}
+        </td>
 
-      <ng-template pTemplate="body" let-venta>
-        <tr [style.background]="expandedRows[venta.ventaID] ? '#f8fafc' : 'white'" style="border-bottom: 1px solid #f1f5f9; transition: background 0.2s ease;">
-          
-          <td style="padding: 14px; text-align: center; vertical-align: middle;">
-            <span class="p-column-title block md:hidden" style="font-weight: 600; color: #64748b; font-size: 0.85rem; margin-bottom: 4px;">Detalle</span>
-            <button
-              type="button"
-              pButton
-              pRipple
-              (click)="toggleRow(venta)"
-              [icon]="expandedRows[venta.ventaID] ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"
-              class="p-button-text p-button-rounded p-button-plain"
-              style="width: 28px; height: 28px; color: #94a3b8;">
-            </button>
-          </td>
+        <td style="padding: 14px; text-align: center; vertical-align: middle;">
+          <span class="p-column-title block md:hidden" style="font-weight: 600; color: #64748b; font-size: 0.85rem; margin-bottom: 4px;">Boleta</span>
+          <button 
+            type="button"
+            pButton 
+            icon="pi pi-file-pdf" 
+            class="p-button-text p-button-rounded p-button-info" 
+            style="width: 32px; height: 32px; color: #0284c7;"
+            title="Generar PDF de Boleta"
+            [disabled]="cargando"
+            (click)="descargarBoleta(venta.ventaID)">
+          </button>
+        </td>
 
-          <td style="padding: 14px; vertical-align: middle; font-weight: 600; color: #334155; word-break: break-word;">
-            <span class="p-column-title block md:hidden" style="font-weight: 600; color: #64748b; font-size: 0.85rem; margin-bottom: 4px;">Comprobante</span>
-            {{ venta.tipoComprobante }} - {{ venta.numeroComprobante }}
-          </td>
+        <td style="padding: 14px; text-align: center; vertical-align: middle;">
+          <span class="p-column-title block md:hidden" style="font-weight: 600; color: #64748b; font-size: 0.85rem; margin-bottom: 4px;">Anular</span>
+          <button 
+            type="button"
+            pButton 
+            icon="pi pi-times" 
+            class="p-button-danger p-button-text p-button-rounded" 
+            style="width: 32px; height: 32px;"
+            title="Anular Venta"
+            [disabled]="cargando"
+            (click)="anularVenta(venta.ventaID)">
+          </button>
+        </td>
+      </tr>
 
-          <td style="padding: 14px; vertical-align: middle; color: #475569;">
-            <span class="p-column-title block md:hidden" style="font-weight: 600; color: #64748b; font-size: 0.85rem; margin-bottom: 4px;">Cliente</span>
-            {{ venta.clienteID === 1 ? 'Sin Cliente' : venta.clienteNombre }}
-          </td>
-          
-          <td style="padding: 14px; text-align: center; vertical-align: middle;">
-            <span class="p-column-title block md:hidden" style="font-weight: 600; color: #64748b; font-size: 0.85rem; margin-bottom: 4px;">Método de Pago</span>
-            <div style="display: inline-flex; gap: 4px; justify-content: center; flex-wrap: wrap;">
-              <span *ngIf="venta.esCredito" style="background-color: #fef2f2; color: #991b1b; font-size: 0.72rem; font-weight: 600; padding: 4px 8px; border-radius: 6px; white-space: nowrap;">⏳ Crédito</span>
-              <span *ngIf="!venta.esCredito && venta.esEfectivo && venta.esDigital" style="background-color: #fef3c7; color: #92400e; font-size: 0.72rem; font-weight: 600; padding: 4px 8px; border-radius: 6px; white-space: nowrap;">🔄 Mixto</span>
-              <span *ngIf="!venta.esCredito && venta.esEfectivo && !venta.esDigital" style="background-color: #dcfce7; color: #166534; font-size: 0.72rem; font-weight: 600; padding: 4px 8px; border-radius: 6px; white-space: nowrap;">💵 Efectivo</span>
-              <span *ngIf="!venta.esCredito && venta.esDigital && !venta.esEfectivo" style="background-color: #e0f2fe; color: #0369a1; font-size: 0.72rem; font-weight: 600; padding: 4px 8px; border-radius: 6px; white-space: nowrap;">📱 Digital</span>
+      <tr *ngIf="expandedRows[venta.ventaID]" style="background: #fafafa !important;">
+        <td colspan="7" style="padding: 16px 20px; border-bottom: 1px solid #e2e8f0;">
+          <div style="padding-top: 4px;">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+              <span style="font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em;">Items vendidos</span>
+              <span style="height: 1px; flex-grow: 1; background: #e2e8f0;"></span>
             </div>
-          </td>
 
-          <td style="padding: 14px; text-align: right; vertical-align: middle; font-weight: 700; color: #0f172a;">
-            <span class="p-column-title block md:hidden" style="font-weight: 600; color: #64748b; font-size: 0.85rem; margin-bottom: 4px;">Total</span>
-            S/ {{ venta.total | number:'1.2-2' }}
-          </td>
+            <p-table [value]="venta.detalles" responsiveLayout="stack" breakpoint="768px" styleClass="p-datatable-sm no-borders-table">
+              <ng-template pTemplate="header">
+                <tr>
+                  <th style="font-size: 0.75rem; color: #94a3b8; font-weight: 600; background: transparent; padding: 6px 0; border: none;">Producto</th>
+                  <th style="font-size: 0.75rem; color: #94a3b8; font-weight: 600; background: transparent; padding: 6px 0; text-align: center; border: none; width: 60px;">Cant.</th>
+                  <th style="font-size: 0.75rem; color: #94a3b8; font-weight: 600; background: transparent; padding: 6px 0; text-align: right; border: none; width: 90px;">Precio</th>
+                  <th style="font-size: 0.75rem; color: #94a3b8; font-weight: 600; background: transparent; padding: 6px 0; text-align: right; border: none; width: 100px;">Subtotal</th>
+                </tr>
+              </ng-template>
 
-          <td style="padding: 14px; text-align: center; vertical-align: middle;">
-            <span class="p-column-title block md:hidden" style="font-weight: 600; color: #64748b; font-size: 0.85rem; margin-bottom: 4px;">Anular</span>
-            <button 
-              type="button"
-              pButton 
-              icon="pi pi-times" 
-              class="p-button-danger p-button-text p-button-rounded" 
-              style="width: 32px; height: 32px;"
-              title="Anular Venta"
-              [disabled]="cargando"
-              (click)="anularVenta(venta.ventaID)">
-            </button>
-          </td>
-        </tr>
+              <ng-template pTemplate="body" let-detalle>
+                <tr style="background: transparent !important;">
+                  <td style="font-size: 0.8rem; color: #475569; font-weight: 500; padding: 8px 0; border: none;">
+                    <span class="p-column-title block md:hidden" style="font-weight: 600; color: #94a3b8; font-size: 0.75rem; margin-bottom: 2px;">Producto</span>
+                    {{ detalle.nombreProducto }}
+                  </td>
+                  <td style="font-size: 0.8rem; color: #64748b; padding: 8px 0; text-align: center; border: none;">
+                    <span class="p-column-title block md:hidden" style="font-weight: 600; color: #94a3b8; font-size: 0.75rem; margin-bottom: 2px;">Cant.</span>
+                    {{ detalle.cantidad }}
+                  </td>
+                  <td style="font-size: 0.8rem; color: #64748b; padding: 8px 0; text-align: right; border: none;">
+                    <span class="p-column-title block md:hidden" style="font-weight: 600; color: #94a3b8; font-size: 0.75rem; margin-bottom: 2px;">Precio</span>
+                    S/ {{ detalle.precioUnitario | number:'1.2-2' }}
+                  </td>
+                  <td style="font-size: 0.8rem; color: #334155; font-weight: 600; padding: 8px 0; text-align: right; border: none;">
+                    <span class="p-column-title block md:hidden" style="font-weight: 600; color: #94a3b8; font-size: 0.75rem; margin-bottom: 2px;">Subtotal</span>
+                    S/ {{ detalle.subtotal | number:'1.2-2' }}
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
 
-        <!-- Fila Expandible: Items Vendidos -->
-        <tr *ngIf="expandedRows[venta.ventaID]" style="background: #fafafa !important;">
-          <td colspan="6" style="padding: 16px 20px; border-bottom: 1px solid #e2e8f0;">
-            <div style="padding-top: 4px;">
-              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
-                <span style="font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em;">Items vendidos</span>
-                <span style="height: 1px; flex-grow: 1; background: #e2e8f0;"></span>
-              </div>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="7" style="text-align: center; padding: 30px; color: #64748b; font-size: 0.9rem;">
+          No se encontraron ventas que coincidan con la búsqueda.
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
 
-              <p-table [value]="venta.detalles" responsiveLayout="stack" breakpoint="768px" styleClass="p-datatable-sm no-borders-table">
-                <ng-template pTemplate="header">
-                  <tr>
-                    <th style="font-size: 0.75rem; color: #94a3b8; font-weight: 600; background: transparent; padding: 6px 0; border: none;">Producto</th>
-                    <th style="font-size: 0.75rem; color: #94a3b8; font-weight: 600; background: transparent; padding: 6px 0; text-align: center; border: none; width: 60px;">Cant.</th>
-                    <th style="font-size: 0.75rem; color: #94a3b8; font-weight: 600; background: transparent; padding: 6px 0; text-align: right; border: none; width: 90px;">Precio</th>
-                    <th style="font-size: 0.75rem; color: #94a3b8; font-weight: 600; background: transparent; padding: 6px 0; text-align: right; border: none; width: 100px;">Subtotal</th>
-                  </tr>
-                </ng-template>
+  <div *ngIf="listaVentasFiltradas && listaVentasFiltradas.length > 0" 
+       class="dashboard-footer-responsive"
+       style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; background: #f8fafc; border: 1px solid #e2e8f0; border-top: none; border-radius: 0 0 12px 12px; padding: 16px 24px; gap: 20px; box-sizing: border-box;">
+    
+    <style>
+      .dashboard-totals-group { display: flex; gap: 40px; align-items: center; }
+      .dashboard-divider-line { border-left: 2px dashed #cbd5e1; padding-left: 40px; }
+      .dashboard-cancel-btn { width: 120px; }
 
-                <ng-template pTemplate="body" let-detalle>
-                  <tr style="background: transparent !important;">
-                    <td style="font-size: 0.8rem; color: #475569; font-weight: 500; padding: 8px 0; border: none;">
-                      <span class="p-column-title block md:hidden" style="font-weight: 600; color: #94a3b8; font-size: 0.75rem; margin-bottom: 2px;">Producto</span>
-                      {{ detalle.nombreProducto }}
-                    </td>
-                    <td style="font-size: 0.8rem; color: #64748b; padding: 8px 0; text-align: center; border: none;">
-                      <span class="p-column-title block md:hidden" style="font-weight: 600; color: #94a3b8; font-size: 0.75rem; margin-bottom: 2px;">Cant.</span>
-                      {{ detalle.cantidad }}
-                    </td>
-                    <td style="font-size: 0.8rem; color: #64748b; padding: 8px 0; text-align: right; border: none;">
-                      <span class="p-column-title block md:hidden" style="font-weight: 600; color: #94a3b8; font-size: 0.75rem; margin-bottom: 2px;">Precio</span>
-                      S/ {{ detalle.precioUnitario | number:'1.2-2' }}
-                    </td>
-                    <td style="font-size: 0.8rem; color: #334155; font-weight: 600; padding: 8px 0; text-align: right; border: none;">
-                      <span class="p-column-title block md:hidden" style="font-weight: 600; color: #94a3b8; font-size: 0.75rem; margin-bottom: 2px;">Subtotal</span>
-                      S/ {{ detalle.subtotal | number:'1.2-2' }}
-                    </td>
-                  </tr>
-                </ng-template>
-              </p-table>
-            </div>
-          </td>
-        </tr>
-      </ng-template>
+      @media (max-width: 767px) {
+        .dashboard-footer-responsive { flex-direction: column-reverse !important; align-items: stretch !important; padding: 16px !important; gap: 20px !important; }
+        .dashboard-totals-group { flex-direction: column !important; align-items: stretch !important; gap: 14px !important; }
+        .dashboard-divider-line { border-left: none !important; padding-left: 0 !important; border-top: 1px dashed #cbd5e1; padding-top: 14px; }
+        .dashboard-cancel-btn { width: 100% !important; }
+      }
+    </style>
 
-      <ng-template pTemplate="emptymessage">
-        <tr>
-          <td colspan="6" style="text-align: center; padding: 30px; color: #64748b; font-size: 0.9rem;">
-            No se encontraron ventas que coincidan con la búsqueda.
-          </td>
-        </tr>
-      </ng-template>
-    </p-table>
-
-    <!-- 📊 SECCIÓN DE TOTALES PERFECCIONADA: Misma estética SaaS, cero desbordes -->
-    <div *ngIf="listaVentasFiltradas && listaVentasFiltradas.length > 0" 
-         class="dashboard-footer-responsive"
-         style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; background: #f8fafc; border: 1px solid #e2e8f0; border-top: none; border-radius: 0 0 12px 12px; padding: 16px 24px; gap: 20px; box-sizing: border-box;">
-      
-      <!-- Inyección de estilos en línea inteligentes para conservar el diseño intacto -->
-      <style>
-        .dashboard-totals-group {
-          display: flex;
-          gap: 40px;
-          align-items: center;
-        }
-        .dashboard-divider-line {
-          border-left: 2px dashed #cbd5e1;
-          padding-left: 40px;
-        }
-        .dashboard-cancel-btn {
-          width: 120px;
-        }
-
-        /* En teléfonos se redistribuye fluidamente sin perder estilos */
-        @media (max-width: 767px) {
-          .dashboard-footer-responsive {
-            flex-direction: column-reverse !important;
-            align-items: stretch !important;
-            padding: 16px !important;
-            gap: 20px !important;
-          }
-          .dashboard-totals-group {
-            flex-direction: column !important;
-            align-items: stretch !important;
-            gap: 14px !important;
-          }
-          .dashboard-divider-line {
-            border-left: none !important;
-            padding-left: 0 !important;
-            border-top: 1px dashed #cbd5e1;
-            padding-top: 14px;
-          }
-          .dashboard-cancel-btn {
-            width: 100% !important;
-          }
-        }
-      </style>
-
-      <!-- Botón Cancelar original -->
-      <div class="dashboard-cancel-btn">
-        <button #btnCancelar type="button" (click)="cerrarModalReporte()" class="saas-btn-secondary" 
-                style="width: 100%; min-height: 40px; display: inline-flex; justify-content: center; align-items: center; margin: 0; border: 1px solid #cbd5e1; background: white; border-radius: 8px; font-weight: 600; color: #475569; cursor: pointer;">
-          Salir
-        </button>
-      </div>
-
-      <!-- Bloques de totales originales intactos -->
-      <div class="dashboard-totals-group">
-        <div style="text-align: right;">
-          <div style="font-size: 0.85rem; color: #64748b; font-weight: 600; margin-bottom: 4px;">Total Efectivo:</div>
-          <div style="font-size: 0.95rem; color: #166534; font-weight: 700;">S/ {{ calcularTotalEfectivo() | number:'1.2-2' }}</div>
-        </div>
-        <div style="text-align: right;">
-          <div style="font-size: 0.85rem; color: #64748b; font-weight: 600; margin-bottom: 4px;">Total Digital:</div>
-          <div style="font-size: 0.95rem; color: #0369a1; font-weight: 700;">S/ {{ calcularTotalDigital() | number:'1.2-2' }}</div>
-        </div>
-        <div class="dashboard-divider-line" style="text-align: right;">
-          <div style="font-size: 0.85rem; color: #0f172a; font-weight: 700; margin-bottom: 4px;">Total General:</div>
-          <div style="font-size: 1.1rem; color: #0f172a; font-weight: 800;">S/ {{ calcularTotalGeneral() | number:'1.2-2' }}</div>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- Botón Cancelar de Contingencia (Solo visible si la tabla está vacía) -->
-    <div *ngIf="!listaVentasFiltradas || listaVentasFiltradas.length === 0" 
-         style="display: flex; justify-content: flex-end; border-top: 1px solid #e2e8f0; padding-top: 15px; margin-top: 15px;">
-      <button type="button" (click)="cerrarModalReporte()" class="saas-btn-secondary" 
-              style="width: 100%; max-width: 120px; min-height: 40px; display: inline-flex; justify-content: center; align-items: center; border: 1px solid #cbd5e1; background: white; border-radius: 8px; font-weight: 600; color: #475569; cursor: pointer;">
-        Cancelar
+    <div class="dashboard-cancel-btn">
+      <button #btnCancelar type="button" (click)="cerrarModalReporte()" class="saas-btn-secondary" 
+              style="width: 100%; min-height: 40px; display: inline-flex; justify-content: center; align-items: center; margin: 0; border: 1px solid #cbd5e1; background: white; border-radius: 8px; font-weight: 600; color: #475569; cursor: pointer;">
+        Salir
       </button>
     </div>
 
+    <div class="dashboard-totals-group">
+      <div style="text-align: right;">
+        <div style="font-size: 0.85rem; color: #64748b; font-weight: 600; margin-bottom: 4px;">Total Efectivo:</div>
+        <div style="font-size: 0.95rem; color: #166534; font-weight: 700;">S/ {{ calcularTotalEfectivo() | number:'1.2-2' }}</div>
+      </div>
+      <div style="text-align: right;">
+        <div style="font-size: 0.85rem; color: #64748b; font-weight: 600; margin-bottom: 4px;">Total Digital:</div>
+        <div style="font-size: 0.95rem; color: #0369a1; font-weight: 700;">S/ {{ calcularTotalDigital() | number:'1.2-2' }}</div>
+      </div>
+      <div class="dashboard-divider-line" style="text-align: right;">
+        <div style="font-size: 0.85rem; color: #0f172a; font-weight: 700; margin-bottom: 4px;">Total General:</div>
+        <div style="font-size: 1.1rem; color: #0f172a; font-weight: 800;">S/ {{ calcularTotalGeneral() | number:'1.2-2' }}</div>
+      </div>
+    </div>
   </div>
+
+  <div *ngIf="!listaVentasFiltradas || listaVentasFiltradas.length === 0" 
+       style="display: flex; justify-content: flex-end; border-top: 1px solid #e2e8f0; padding-top: 15px; margin-top: 15px;">
+    <button type="button" (click)="cerrarModalReporte()" class="saas-btn-secondary" 
+            style="width: 100%; max-width: 120px; min-height: 40px; display: inline-flex; justify-content: center; align-items: center; border: 1px solid #cbd5e1; background: white; border-radius: 8px; font-weight: 600; color: #475569; cursor: pointer;">
+      Cancelar
+    </button>
+  </div>
+</div>
 </p-dialog>
 
 

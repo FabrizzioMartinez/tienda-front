@@ -81,4 +81,12 @@ getVentasFiltro(fecha: Date | null, fechaHasta: Date | null, productoId?: number
 anular(id: number): Observable<any> {
   return this.http.delete(`${this.apiUrl}/anular/${id}`);
 }
+
+getVentaPorId(id: number): Observable<VentaDto> {
+  // Viaja hacia api/ventas/{id} y mapea directamente la data del DTO plano
+  return this.http.get<{ data: VentaDto }>(`${this.apiUrl}/${id}`)
+    .pipe(
+      map(response => response.data)
+    );
+}
 }
