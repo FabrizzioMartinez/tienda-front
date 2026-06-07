@@ -134,153 +134,165 @@
   </div>
 
   <p-dialog 
-    [(visible)]="verModal" 
-    [modal]="true" 
-    [breakpoints]="{'1200px': '60vw', '960px': '75vw', '640px': '95vw'}" 
-    [style]="{width: '650px', background: 'white', padding: '24px', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)'}"
-    [draggable]="false" 
-    [resizable]="false"
-    [closable]="false"
-    (onHide)="cerrarModal()">
+  [(visible)]="verModal" 
+  [modal]="true" 
+  [breakpoints]="{'1200px': '60vw', '960px': '75vw', '640px': '95vw'}" 
+  [style]="{width: '650px', background: 'white', padding: '24px', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)'}"
+  [draggable]="false" 
+  [resizable]="false"
+  [closable]="false"
+  (onHide)="cerrarModal()">
+  
+  <ng-template pTemplate="header">
+    <div>
+      <h3 style="margin: 0; color: #1e293b; font-size: 1.4rem; font-weight: 700;">
+        {{ esEdicion ? 'Actualizar Producto' : 'Nuevo Producto' }}
+      </h3>
+      <p style="color: #64748b; font-size: 0.85rem; margin: 5px 0 0 0;">
+        {{ esEdicion ? 'Modifica el costo y stock actual del artículo.' : 'Completa todos los campos obligatorios de la ficha técnica.' }}
+      </p>
+    </div>
+  </ng-template>
+  
+  <form #productForm="ngForm" (ngSubmit)="productForm.form.valid && registrarProducto()" style="margin-top: 15px;">
     
-    <ng-template pTemplate="header">
-      <div>
-        <h3 style="margin: 0; color: #1e293b; font-size: 1.4rem; font-weight: 700;">
-          {{ esEdicion ? 'Actualizar Producto' : 'Nuevo Producto' }}
-        </h3>
-        <p style="color: #64748b; font-size: 0.85rem; margin: 5px 0 0 0;">
-          {{ esEdicion ? 'Modifica el costo y stock actual del artículo.' : 'Completa todos los campos obligatorios de la ficha técnica.' }}
-        </p>
-      </div>
-    </ng-template>
-    
-    <form #productForm="ngForm" (ngSubmit)="productForm.form.valid && registrarProducto()" style="margin-top: 15px;">
-      
-      <div class="custom-field-group" style="margin-bottom: 24px;">
+    <div class="custom-field-group" style="margin-bottom: 24px;">
+      <input 
+        type="text" 
+        id="nombre" 
+        name="nombreProd" 
+        [ngModel]="nuevoProducto.nombre"
+        (ngModelChange)="transformarTitleCase($event)" 
+        [disabled]="esEdicion" 
+        required 
+        placeholder=" " 
+        class="premium-input">
+      <label for="nombre" class="custom-label">Nombre del Producto *</label>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 24px;">
+      <div class="custom-field-group">
         <input 
-          type="text" 
-          id="nombre" 
-          name="nombreProd" 
-          [ngModel]="nuevoProducto.nombre"
-          (ngModelChange)="transformarTitleCase($event)" 
+          type="number" 
+          step="0.01" 
+          id="precio" 
+          name="precioProd" 
+          [(ngModel)]="nuevoProducto.precio" 
+          required 
+          placeholder=" " 
+          class="premium-input">
+        <label for="precio" class="custom-label">Precio (S/) *</label>
+      </div>
+      
+      <div class="custom-field-group">
+        <input 
+          type="number" 
+          id="stock" 
+          name="stockProd" 
+          [(ngModel)]="nuevoProducto.stock" 
+          required 
+          placeholder=" " 
+          class="premium-input">
+        <label for="stock" class="custom-label">Stock Actual *</label>
+      </div>
+      
+      <div class="custom-field-group">
+        <input 
+          type="number" 
+          id="minimo" 
+          name="minProd" 
+          [(ngModel)]="nuevoProducto.stockMinimo" 
           [disabled]="esEdicion" 
           required 
           placeholder=" " 
           class="premium-input">
-        <label for="nombre" class="custom-label">Nombre del Producto *</label>
+        <label for="minimo" class="custom-label">Min. Alerta *</label>
+      </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 30px;">
+      
+      <div style="display: flex; flex-direction: column; gap: 6px;">
+        <label for="marca" style="font-weight: 600; color: #475569; font-size: 0.85rem;">Marca Comercial *</label>
+        <p-autoComplete 
+          id="marca"
+          name="marcaProd"
+          [(ngModel)]="marcaSeleccionada"
+          [suggestions]="sugerenciasMarcas"
+          (completeMethod)="filtrarMarcas($event)"
+          (onSelect)="nuevoProducto.marcaID = $event.value.marcaID"
+          (onClear)="nuevoProducto.marcaID = undefined"
+          optionLabel="nombre"
+          [dropdown]="true"
+          [forceSelection]="true"
+          [disabled]="esEdicion"
+          required
+          styleClass="w-full"
+          inputStyleClass="w-full"
+          appendTo="body">
+        </p-autoComplete>
       </div>
 
-      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 24px;">
-        <div class="custom-field-group">
-          <input 
-            type="number" 
-            step="0.01" 
-            id="precio" 
-            name="precioProd" 
-            [(ngModel)]="nuevoProducto.precio" 
-            required 
-            placeholder=" " 
-            class="premium-input">
-          <label for="precio" class="custom-label">Precio (S/) *</label>
-        </div>
-        
-        <div class="custom-field-group">
-          <input 
-            type="number" 
-            id="stock" 
-            name="stockProd" 
-            [(ngModel)]="nuevoProducto.stock" 
-            required 
-            placeholder=" " 
-            class="premium-input">
-          <label for="stock" class="custom-label">Stock Actual *</label>
-        </div>
-        
-        <div class="custom-field-group">
-          <input 
-            type="number" 
-            id="minimo" 
-            name="minProd" 
-            [(ngModel)]="nuevoProducto.stockMinimo" 
-            [disabled]="esEdicion" 
-            required 
-            placeholder=" " 
-            class="premium-input">
-          <label for="minimo" class="custom-label">Min. Alerta *</label>
-        </div>
+      <div style="display: flex; flex-direction: column; gap: 6px;">
+        <label for="categoria" style="font-weight: 600; color: #475569; font-size: 0.85rem;">Categoría *</label>
+        <p-autoComplete 
+          id="categoria"
+          name="tipoProd"
+          [(ngModel)]="categoriaSeleccionada"
+          [suggestions]="sugerenciasCategorias"
+          (completeMethod)="filtrarCategorias($event)"
+          (onSelect)="nuevoProducto.tipoProductoID = $event.value.tipoProductoID"
+          (onClear)="nuevoProducto.tipoProductoID = undefined"
+          optionLabel="nombre"
+          [dropdown]="true"
+          [forceSelection]="true"
+          [disabled]="esEdicion"
+          required
+          styleClass="w-full"
+          inputStyleClass="w-full"
+          appendTo="body">
+        </p-autoComplete>
       </div>
 
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 30px;">
-        
-        <div style="display: flex; flex-direction: column; gap: 6px;">
-          <label for="marca" style="font-weight: 600; color: #475569; font-size: 0.85rem;">Marca Comercial *</label>
-          <p-select 
-            id="marca"
-            name="marcaProd" 
-            [options]="listaMarcas" 
-            [(ngModel)]="nuevoProducto.marcaID"
-            optionLabel="nombre" 
-            optionValue="marcaID"
-            [disabled]="esEdicion"
-            required
-            placeholder="Seleccione..."
-            appendTo="body"
-            styleClass="w-full">
-          </p-select>
-        </div>
-
-        <div style="display: flex; flex-direction: column; gap: 6px;">
-          <label for="categoria" style="font-weight: 600; color: #475569; font-size: 0.85rem;">Categoría *</label>
-          <p-select 
-            id="categoria"
-            name="tipoProd" 
-            [options]="listaTipos" 
-            [(ngModel)]="nuevoProducto.tipoProductoID"
-            optionLabel="nombre" 
-            optionValue="tipoProductoID"
-            [disabled]="esEdicion"
-            required
-            placeholder="Seleccione..."
-            appendTo="body"
-            styleClass="w-full">
-          </p-select>
-        </div>
-
-        <div style="display: flex; flex-direction: column; gap: 6px;">
-          <label for="tamano" style="font-weight: 600; color: #475569; font-size: 0.85rem;">Tamaño Métrico *</label>
-          <p-select 
-            id="tamano"
-            name="unidadProd" 
-            [options]="listaUnidades" 
-            [(ngModel)]="nuevoProducto.unidadMedidaID"
-            optionLabel="nombre" 
-            optionValue="unidadMedidaID"
-            [disabled]="esEdicion"
-            required
-            placeholder="Seleccione..."
-            appendTo="body"
-            styleClass="w-full">
-            <ng-template let-option pTemplate="item">
-              {{ option.nombre }} ({{ option.abreviatura }})
-            </ng-template>
-          </p-select>
-        </div>
-
+      <div style="display: flex; flex-direction: column; gap: 6px;">
+        <label for="tamano" style="font-weight: 600; color: #475569; font-size: 0.85rem;">Tamaño Métrico *</label>
+        <p-autoComplete 
+          id="tamano"
+          name="unidadProd"
+          [(ngModel)]="unidadSeleccionada"
+          [suggestions]="sugerenciasUnidades"
+          (completeMethod)="filtrarUnidades($event)"
+          (onSelect)="nuevoProducto.unidadMedidaID = $event.value.unidadMedidaID"
+          (onClear)="nuevoProducto.unidadMedidaID = undefined"
+          optionLabel="nombre"
+          [dropdown]="true"
+          [forceSelection]="true"
+          [disabled]="esEdicion"
+          required
+          styleClass="w-full"
+          inputStyleClass="w-full"
+          appendTo="body">
+          <ng-template let-option pTemplate="item">
+            {{ option.nombre }} ({{ option.abreviatura }})
+          </ng-template>
+        </p-autoComplete>
       </div>
 
-      <div style="display: flex; gap: 12px; justify-content: flex-end; border-top: 1px solid #e2e8f0; padding-top: 20px;">
-        <button type="button" (click)="cerrarModal()" class="saas-btn-secondary">Cancelar</button>
-        <button 
-          type="submit" 
-          [disabled]="!productForm.form.valid" 
-          class="saas-btn-primary"
-          [style.opacity]="!productForm.form.valid ? '0.6' : '1'"
-          [style.cursor]="!productForm.form.valid ? 'not-allowed' : 'pointer'">
-          📦 Guardar Producto
-        </button>
-      </div>
-    </form>
-  </p-dialog>
+    </div>
+
+    <div style="display: flex; gap: 12px; justify-content: flex-end; border-top: 1px solid #e2e8f0; padding-top: 20px;">
+      <button type="button" (click)="cerrarModal()" class="saas-btn-secondary">Cancelar</button>
+      <button 
+        type="submit" 
+        [disabled]="!productForm.form.valid" 
+        class="saas-btn-primary"
+        [style.opacity]="!productForm.form.valid ? '0.6' : '1'"
+        [style.cursor]="!productForm.form.valid ? 'not-allowed' : 'pointer'">
+        📦 Guardar Producto
+      </button>
+    </div>
+  </form>
+</p-dialog>
 
   <div *ngIf="mostrarToast" class="saas-toast">
     <span style="font-size: 1.2rem;">✅</span>

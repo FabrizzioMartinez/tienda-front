@@ -2,7 +2,8 @@ import {
   Component,
   OnInit,
   ChangeDetectionStrategy,
-  ChangeDetectorRef
+  ChangeDetectorRef,
+  HostListener // 🌟 Importado para el atajo de teclado F2
 } from '@angular/core';
 
 import { CommonModule } from '@angular/common';
@@ -24,6 +25,7 @@ import { DialogModule } from 'primeng/dialog';
 import { SelectModule } from 'primeng/select';
 import { ButtonModule } from 'primeng/button';
 import { InputNumberModule } from 'primeng/inputnumber';
+import { AutoCompleteModule } from 'primeng/autocomplete';
 
 @Component({
   selector: 'app-producto-list',
@@ -36,14 +38,15 @@ import { InputNumberModule } from 'primeng/inputnumber';
     DialogModule,
     SelectModule,
     ButtonModule,
-    InputNumberModule
+    InputNumberModule,
+    AutoCompleteModule
   ],
   templateUrl: './producto-list.component.html',
   styleUrl: './producto-list.component.css',
 })
 export class ProductoListComponent implements OnInit {
   /* =========================================================
-      CATÁLOGOS Y LISTAS
+      CATÁLOGOS Y LISTAS MAESTRAS
   ========================================================= */
   listaProductos: ProductoDto[] = []; 
   listaMarcas: MarcaDto[] = [];
@@ -56,6 +59,19 @@ export class ProductoListComponent implements OnInit {
   verModal: boolean = false;
   esEdicion: boolean = false;
   nuevoProducto: Producto = this.initProducto();
+
+  /* =========================================================
+      🌟 PROPIEDADES PARA LOS COMPONENTS AUTOCOMPLETE
+  ========================================================= */
+  // Modelos visuales tipados como any para asimilar estados de texto transitorios
+  marcaSeleccionada: any = null;
+  categoriaSeleccionada: any = null;
+  unidadSeleccionada: any = null;
+
+  // Listas dinámicas de sugerencias filtradas en tiempo real
+  sugerenciasMarcas: MarcaDto[] = [];
+  sugerenciasCategorias: TipoProductoDto[] = [];
+  sugerenciasUnidades: UnidadMedidaDto[] = [];
 
   /* =========================================================
       ESTADOS COMUNES
@@ -74,6 +90,22 @@ export class ProductoListComponent implements OnInit {
 
   ngOnInit(): void {
     this.cargarDatos();
+  }
+
+  /* =========================================================
+      🌟 ESCUCHADOR DE TECLADO GLOBAL (ATAJO F2)
+  ========================================================= */
+  @HostListener('window:keydown', ['$event'])
+  manejarAtajoTeclado(event: KeyboardEvent): void {
+    if (event.key === 'F2') {
+      event.preventDefault(); // Evita conflictos con funciones nativas del navegador
+
+      if (!this.verModal) {
+        this.esEdicion = false; // Forzamos creación de ficha técnica limpia
+        this.verModal = true;
+        this.cdr.detectChanges(); // Fuerza renderizado inmediato en ChangeDetection OnPush
+      }
+    }
   }
 
   /* =========================================================
@@ -120,6 +152,31 @@ export class ProductoListComponent implements OnInit {
   }
 
   /* =========================================================
+      🌟 MÉTODOS DE FILTRADO REACTIVO PARA AUTOCOMPLETE
+  ========================================================= */
+  filtrarMarcas(event: any): void {
+    const query = (event.query || '').toLowerCase();
+    this.sugerenciasMarcas = this.listaMarcas.filter(m => 
+      m.nombre.toLowerCase().includes(query)
+    );
+  }
+
+  filtrarCategorias(event: any): void {
+    const query = (event.query || '').toLowerCase();
+    this.sugerenciasCategorias = this.listaTipos.filter(c => 
+      c.nombre.toLowerCase().includes(query)
+    );
+  }
+
+  filtrarUnidades(event: any): void {
+    const query = (event.query || '').toLowerCase();
+    this.sugerenciasUnidades = this.listaUnidades.filter(u => 
+      u.nombre.toLowerCase().includes(query) || 
+      (u.abreviatura && u.abreviatura.toLowerCase().includes(query))
+    );
+  }
+
+  /* =========================================================
       ACCIONES: FORMULARIO PRINCIPAL (GUARDAR / REGISTRAR)
   ========================================================= */
   registrarProducto(): void {
@@ -146,16 +203,15 @@ export class ProductoListComponent implements OnInit {
   }
 
   /* =========================================================
-      MÉTODO CORREGIDO: EDICIÓN COMPLETA DEL MAESTRO
+      MÉTODO DE EDICIÓN ADAPTADO A AUTOCOMPLETE
   ========================================================= */
   editarProducto(id: number): void {    
     this.productoService.getById(id).subscribe({
       next: (productoDto) => {
         if (productoDto) {
-          // 🔄 Seteamos el estado para que el formulario se configure en modo Edición
           this.esEdicion = true;
 
-          // 🌟 Mapeamos del DTO plano que nos da la API hacia la entidad Producto del formulario
+          // 1. Mapeamos la entidad Producto para el envío final de datos
           this.nuevoProducto = {
             productoID: productoDto.productoID,
             nombre: productoDto.nombre,
@@ -164,13 +220,35 @@ export class ProductoListComponent implements OnInit {
             stockMinimo: productoDto.stockMinimo,
             activo: true,
             fechaModificacion: new Date(),
-            // Extraemos los IDs que van a alimentar los p-select mapeados por "optionValue"
-            marcaID: (productoDto as any).marcaID,        
-            tipoProductoID: (productoDto as any).tipoProductoID, 
-            unidadMedidaID: (productoDto as any).unidadMedidaID  
+            marcaID: productoDto.marcaID ?? undefined,        
+            tipoProductoID: productoDto.tipoProductoID ?? undefined, 
+            unidadMedidaID: productoDto.unidadMedidaID ?? undefined  
           };
 
-          // 🔓 Abrimos el diálogo integral y forzamos renderizado para evitar desajustes en PrimeNG
+          // 2. Reconstruimos los objetos seleccionados para que el AutoComplete pinte los textos
+          if (productoDto.marcaID) {
+            this.marcaSeleccionada = this.listaMarcas.find(m => m.marcaID === productoDto.marcaID) || {
+              marcaID: productoDto.marcaID,
+              nombre: productoDto.nombreMarca || ''
+            };
+          }
+
+          if (productoDto.tipoProductoID) {
+            this.categoriaSeleccionada = this.listaTipos.find(c => c.tipoProductoID === productoDto.tipoProductoID) || {
+              tipoProductoID: productoDto.tipoProductoID,
+              nombre: productoDto.nombreTipo || productoDto.tipoProducto || ''
+            };
+          }
+
+          if (productoDto.unidadMedidaID) {
+            this.unidadSeleccionada = this.listaUnidades.find(u => u.unidadMedidaID === productoDto.unidadMedidaID) || {
+              unidadMedidaID: productoDto.unidadMedidaID,
+              nombre: productoDto.unidadMedida || '',
+              abreviatura: productoDto.abreviatura || ''
+            };
+          }
+
+          // 🔓 Abrimos el diálogo integral y forzamos renderizado inmediato
           this.verModal = true;
           this.cdr.detectChanges();
         }
@@ -196,6 +274,15 @@ export class ProductoListComponent implements OnInit {
     this.verModal = false;
     this.esEdicion = false; 
     this.nuevoProducto = this.initProducto();
+
+    // Reseteamos de forma segura las variables de control del AutoComplete
+    this.marcaSeleccionada = null;
+    this.categoriaSeleccionada = null;
+    this.unidadSeleccionada = null;
+    this.sugerenciasMarcas = [];
+    this.sugerenciasCategorias = [];
+    this.sugerenciasUnidades = [];
+
     this.cdr.detectChanges();
   }
 
